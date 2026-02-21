@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
 import FloatingDecor from "../components/FloatingDecor.vue";
+import { useReveal } from "../composables/useReveal";
+import aboutMeImg from "../assets/images/about-me2.png";
+import instagramIcon from "../assets/images/instagram-icon.png";
+import tiktokIcon from "../assets/images/tiktok-icon.png";
+
+useReveal();
 
 const features = [
   {
     icon: "🎨",
     title: "Coloring Books",
     desc: "Beautiful floral, mandala and nature patterns. Perfect relaxation for adults and children.",
-    to: "/coloring-books",
+    to: { path: "/products", query: { kind: "coloring-books" } },
     color: "var(--primrose)",
     bg: "var(--pinktone)",
   },
@@ -15,7 +21,7 @@ const features = [
     icon: "📓",
     title: "Notebooks",
     desc: "Elegant bullet journals, notebooks and diaries in soft pastel covers.",
-    to: "/notebooks",
+    to: { path: "/products", query: { kind: "notebooks" } },
     color: "var(--lime-dark)",
     bg: "#dfe3c0",
   },
@@ -28,7 +34,7 @@ const features = [
     <section class="hero">
       <FloatingDecor />
 
-      <div class="container hero__content">
+      <div class="container hero__content reveal">
         <p class="hero__badge">✨ Welcome to my world!</p>
         <h1 class="hero__title">
           Caroline<span class="hero__title-accent">Crafts</span>
@@ -42,10 +48,16 @@ const features = [
           Amazon – ready to brighten your day 🌸
         </p>
         <div class="hero__actions">
-          <RouterLink to="/coloring-books" class="btn btn-primary">
+          <RouterLink
+            :to="{ path: '/products', query: { kind: 'coloring-books' } }"
+            class="btn btn-primary"
+          >
             🎨 Coloring Books
           </RouterLink>
-          <RouterLink to="/notebooks" class="btn btn-lime">
+          <RouterLink
+            :to="{ path: '/products', query: { kind: 'notebooks' } }"
+            class="btn btn-lime"
+          >
             📓 Notebooks
           </RouterLink>
           <RouterLink to="/contact" class="btn btn-outline">
@@ -66,12 +78,14 @@ const features = [
       <div class="container about__inner">
         <div class="about__visual">
           <div class="about__avatar">
-            <span>🌸</span>
+            <img
+              :src="aboutMeImg"
+              alt="About Caroline"
+              class="about__avatar-img"
+            />
           </div>
-          <div class="about__decor-circle about__decor-circle--1"></div>
-          <div class="about__decor-circle about__decor-circle--2"></div>
         </div>
-        <div class="about__text">
+        <div class="about__text reveal reveal-delay-1">
           <p class="about__eyebrow">About me</p>
           <h2 class="section-title">Hi, I'm Caroline!</h2>
           <p class="about__body">
@@ -93,19 +107,20 @@ const features = [
     <!-- ═══ CATEGORIES ═════════════════════════════════════════════ -->
     <section class="section categories">
       <div class="container">
-        <p class="section-eyebrow">What I create</p>
-        <h2 class="section-title">My Products</h2>
-        <p class="section-subtitle">
+        <p class="section-eyebrow reveal">What I create</p>
+        <h2 class="section-title reveal reveal-delay-1">My Products</h2>
+        <p class="section-subtitle reveal reveal-delay-2">
           Each product is a unique design – take a look and find something for
           yourself
         </p>
 
         <div class="features-grid">
           <RouterLink
-            v-for="feat in features"
-            :key="feat.to"
+            v-for="(feat, i) in features"
+            :key="feat.title"
             :to="feat.to"
-            class="feature-card"
+            class="feature-card reveal"
+            :class="`reveal-delay-${i + 2}`"
             :style="{ '--accent': feat.color, '--bg': feat.bg }"
           >
             <div class="feature-card__icon">{{ feat.icon }}</div>
@@ -119,7 +134,7 @@ const features = [
 
     <!-- ═══ AMAZON CTA ════════════════════════════════════════════ -->
     <section class="cta-banner">
-      <div class="container cta-banner__inner">
+      <div class="container cta-banner__inner reveal">
         <div class="cta-banner__text">
           <h2 class="cta-banner__title">Find my products<br />on Amazon 🛒</h2>
           <p class="cta-banner__sub">
@@ -140,9 +155,9 @@ const features = [
     <!-- ═══ SOCIAL ════════════════════════════════════════════════ -->
     <section class="section social-section">
       <div class="container social-section__inner">
-        <p class="section-eyebrow">Follow me</p>
-        <h2 class="section-title">Stay up to date</h2>
-        <p class="section-subtitle">
+        <p class="section-eyebrow reveal">Follow me</p>
+        <h2 class="section-title reveal reveal-delay-1">Stay up to date</h2>
+        <p class="section-subtitle reveal reveal-delay-2">
           Check in for new designs, inspiration and behind-the-scenes creative
           content
         </p>
@@ -154,7 +169,9 @@ const features = [
             rel="noopener noreferrer"
             class="social-card social-card--ig"
           >
-            <div class="social-card__icon">📸</div>
+            <div class="social-card__icon">
+              <img :src="instagramIcon" alt="Instagram" />
+            </div>
             <div class="social-card__body">
               <strong>Instagram</strong>
               <span>@carolinecrafts</span>
@@ -168,7 +185,9 @@ const features = [
             rel="noopener noreferrer"
             class="social-card social-card--tt"
           >
-            <div class="social-card__icon">🎵</div>
+            <div class="social-card__icon">
+              <img :src="tiktokIcon" alt="TikTok" />
+            </div>
             <div class="social-card__body">
               <strong>TikTok</strong>
               <span>@carolinecrafts</span>
@@ -188,12 +207,7 @@ const features = [
   min-height: 100vh;
   display: flex;
   align-items: center;
-  background: linear-gradient(
-    135deg,
-    var(--pinktone) 0%,
-    var(--yucca) 60%,
-    #dfe3c0 100%
-  );
+  background: var(--pink-bg);
   overflow: hidden;
   padding-top: 68px;
 }
@@ -208,13 +222,14 @@ const features = [
 .hero__badge {
   display: inline-block;
   background: var(--white);
-  color: var(--mid);
-  font-size: 0.88rem;
-  font-weight: 500;
-  padding: 6px 16px;
+  color: var(--primrose-deep);
+  font-family: var(--font-accent);
+  font-size: 1.15rem;
+  padding: 6px 18px;
   border-radius: 50px;
   margin-bottom: 20px;
   box-shadow: var(--shadow-soft);
+  border: 1.5px solid var(--pinktone);
 }
 
 .hero__title {
@@ -269,12 +284,12 @@ const features = [
 /* ── ABOUT ─────────────────────────────────────────── */
 .about {
   background: var(--white);
+  border-top: 1px solid var(--primrose-light);
 }
 
 .about__inner {
   display: grid;
   grid-template-columns: 1fr 1.4fr;
-  gap: 80px;
   align-items: center;
 }
 
@@ -285,51 +300,28 @@ const features = [
 }
 
 .about__avatar {
-  width: 260px;
-  height: 260px;
-  background: linear-gradient(135deg, var(--pinktone), var(--yucca));
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 6rem;
-  box-shadow: var(--shadow-card);
+  width: 270px;
+  aspect-ratio: 1024/1536;
   position: relative;
   z-index: 1;
 }
 
-.about__decor-circle {
-  position: absolute;
-  border-radius: 50%;
-}
-
-.about__decor-circle--1 {
-  width: 300px;
-  height: 300px;
-  background: var(--pinktone);
-  opacity: 0.3;
-  top: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.about__decor-circle--2 {
-  width: 200px;
-  height: 200px;
-  background: #dfe3c0;
-  opacity: 0.4;
-  bottom: -10px;
-  right: 0;
+.about__avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
 }
 
 .about__eyebrow,
 .section-eyebrow {
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-family: var(--font-accent);
+  font-size: 1.8rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--primrose);
-  margin-bottom: 8px;
+  display: block;
+  margin-bottom: 6px;
 }
 
 .about__body {
@@ -344,7 +336,7 @@ const features = [
 
 /* ── CATEGORIES ────────────────────────────────────── */
 .categories {
-  background: var(--yucca);
+  background: var(--pink-bg);
 }
 
 .features-grid {
@@ -404,7 +396,7 @@ const features = [
 
 /* ── CTA BANNER ─────────────────────────────────────── */
 .cta-banner {
-  background: linear-gradient(120deg, var(--primrose) 0%, #e8808a 100%);
+  background: var(--primrose);
   padding: 60px 0;
 }
 
@@ -443,6 +435,7 @@ const features = [
 /* ── SOCIAL ─────────────────────────────────────────── */
 .social-section {
   background: var(--white);
+  border-top: 1px solid var(--primrose-light);
 }
 
 .social-section__inner {
@@ -476,14 +469,21 @@ const features = [
 }
 
 .social-card--ig {
-  background: linear-gradient(135deg, #fce4ec, #f9d0ce);
+  background: var(--primrose-light);
 }
 .social-card--tt {
-  background: linear-gradient(135deg, #e8f5e9, #dfe3c0);
+  background: var(--lime-light);
 }
 
 .social-card__icon {
-  font-size: 2rem;
+  width: 52px;
+  height: 52px;
+}
+.social-card__icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
 }
 
 .social-card__body {

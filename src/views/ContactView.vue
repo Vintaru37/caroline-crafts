@@ -1,13 +1,81 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import FloatingDecor from "../components/FloatingDecor.vue";
+import { useReveal } from "../composables/useReveal";
+import instagramIcon from "../assets/images/instagram-icon.png";
+import tiktokIcon from "../assets/images/tiktok-icon.png";
 
-const form = ref({
-  name: "",
-  email: "",
-  message: "",
-});
+useReveal();
 
+/* ── FAQ smooth height animation ─────────────────── */
+function onEnter(el: Element) {
+  const h = el as HTMLElement;
+  h.style.overflow = "hidden";
+  h.style.height = "0";
+  h.style.opacity = "0";
+  void h.offsetHeight; // force reflow
+  h.style.transition =
+    "height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease";
+  h.style.height = h.scrollHeight + "px";
+  h.style.opacity = "1";
+}
+
+function onAfterEnter(el: Element) {
+  const h = el as HTMLElement;
+  h.style.height = "";
+  h.style.overflow = "";
+  h.style.transition = "";
+  h.style.opacity = "";
+}
+
+function onLeave(el: Element) {
+  const h = el as HTMLElement;
+  h.style.overflow = "hidden";
+  h.style.height = h.scrollHeight + "px";
+  h.style.opacity = "1";
+  void h.offsetHeight; // force reflow
+  h.style.transition =
+    "height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease";
+  h.style.height = "0";
+  h.style.opacity = "0";
+}
+
+function onAfterLeave(el: Element) {
+  const h = el as HTMLElement;
+  h.style.height = "";
+  h.style.overflow = "";
+  h.style.transition = "";
+  h.style.opacity = "";
+}
+
+/* ── FAQ accordion ───────────────────────────────── */
+const faqs = [
+  {
+    q: "Where can I buy your books?",
+    a: 'All my coloring books and notebooks are available on Amazon. Simply search for "CarolineCrafts" or follow the links on the product pages — shipping is handled directly by Amazon.',
+  },
+  {
+    q: "Do you ship internationally?",
+    a: "Yes! Because my books are printed and shipped through Amazon KDP, they are available worldwide wherever Amazon operates. Delivery times and costs depend on your location.",
+  },
+  {
+    q: "Can you create a custom design?",
+    a: "I occasionally take on custom commissions for coloring books and themed notebooks. Send me a message with your idea and I'll let you know about availability and pricing.",
+  },
+  {
+    q: "How can I follow your creative process?",
+    a: "I share behind-the-scenes timelapse videos, new design previews, and sneak peeks on Instagram and TikTok. Follow @carolinecrafts to stay updated on every new release!",
+  },
+];
+
+const openIndex = ref<number | null>(0);
+
+function toggle(i: number) {
+  openIndex.value = openIndex.value === i ? null : i;
+}
+
+/* ── Contact form ────────────────────────────────── */
+const form = ref({ name: "", email: "", message: "" });
 const sent = ref(false);
 const sending = ref(false);
 
@@ -17,206 +85,141 @@ function handleSubmit() {
     sending.value = false;
     sent.value = true;
     form.value = { name: "", email: "", message: "" };
-  }, 1000);
+  }, 900);
 }
-
-const socials = [
-  {
-    name: "Instagram",
-    handle: "@carolinecrafts",
-    icon: "📸",
-    desc: "Behind the scenes, new designs and inspiration",
-    href: "https://www.instagram.com",
-    bg: "linear-gradient(135deg, #fce4ec, #F9D0CE)",
-    color: "#c2185b",
-  },
-  {
-    name: "TikTok",
-    handle: "@carolinecrafts",
-    icon: "🎵",
-    desc: "Timelapses, how-tos and unboxings",
-    href: "https://www.tiktok.com",
-    bg: "linear-gradient(135deg, #dfe3c0, #B6BB79)",
-    color: "#558b2f",
-  },
-  {
-    name: "Amazon",
-    handle: "CarolineCrafts",
-    icon: "🛒",
-    desc: "All my products in one place",
-    href: "https://www.amazon.com",
-    bg: "linear-gradient(135deg, #F3EBD8, #EADec8)",
-    color: "#e65100",
-  },
-];
 </script>
 
 <template>
   <main>
-    <!-- ── Page Header ─────────────────────────────── -->
+    <!-- ── Page hero ──────────────────────────────── -->
     <section class="page-hero">
       <FloatingDecor />
-      <div class="container page-hero__content">
-        <p class="page-hero__eyebrow">Let's talk</p>
-        <h1 class="page-hero__title">Contact</h1>
+      <div class="container page-hero__inner">
+        <span class="page-hero__eyebrow">say hello 🌸</span>
+        <h1 class="page-hero__title">Get in Touch</h1>
         <p class="page-hero__sub">
-          Have a question about my products, want to collaborate, or just want
-          to say hello? Write to me! 🌸
+          Questions, collaborations, or just want to share the love?<br />
+          I'd love to hear from you.
         </p>
       </div>
     </section>
 
-    <!-- ── Content ─────────────────────────────────── -->
+    <!-- ── Main two-column section ────────────────── -->
     <section class="section contact-section">
-      <div class="container contact-grid">
-        <!-- Form -->
-        <div class="contact-form-wrap">
-          <h2 class="contact-form-wrap__title">Send a message</h2>
-          <p class="contact-form-wrap__sub">
-            I usually reply within 24 hours 🕐
-          </p>
+      <div class="container contact-cols">
+        <!-- LEFT: FAQ accordion -->
+        <div class="faq-col reveal">
+          <span class="eyebrow">FAQs</span>
+          <h2 class="faq-col__heading">
+            Answers to commonly<br />asked questions
+          </h2>
 
-          <Transition name="fade">
-            <div v-if="sent" class="success-banner">
-              🎉 Thank you for your message! I'll reply as soon as possible.
+          <div class="faq-list">
+            <div
+              v-for="(item, i) in faqs"
+              :key="i"
+              class="faq-item"
+              :class="{ 'faq-item--open': openIndex === i }"
+            >
+              <button class="faq-item__btn" @click="toggle(i)">
+                <span class="faq-item__diamond">◆</span>
+                <span class="faq-item__q">{{ item.q }}</span>
+                <span class="faq-item__arrow">{{
+                  openIndex === i ? "▲" : "▼"
+                }}</span>
+              </button>
+              <Transition
+                :css="false"
+                @enter="onEnter"
+                @after-enter="onAfterEnter"
+                @leave="onLeave"
+                @after-leave="onAfterLeave"
+              >
+                <div v-show="openIndex === i" class="faq-item__answer">
+                  {{ item.a }}
+                </div>
+              </Transition>
             </div>
-          </Transition>
+          </div>
+        </div>
 
-          <form
-            v-if="!sent"
-            class="contact-form"
-            @submit.prevent="handleSubmit"
-          >
-            <div class="form-group">
-              <label class="form-label" for="name">Name *</label>
+        <!-- RIGHT: Form + socials -->
+        <div class="form-col reveal reveal-delay-2">
+          <!-- Form card -->
+          <div class="form-card">
+            <h2 class="form-card__title">Contact Us</h2>
+            <p class="form-card__sub">
+              Feel free to reach out — I typically reply within 24 hours 🕐
+            </p>
+
+            <Transition name="fade">
+              <div v-if="sent" class="success-msg">
+                🎉 Message sent! I'll get back to you soon.
+              </div>
+            </Transition>
+
+            <form v-if="!sent" class="c-form" @submit.prevent="handleSubmit">
               <input
-                id="name"
                 v-model="form.name"
-                class="form-input"
+                class="c-form__input"
                 type="text"
-                placeholder="What should I call you?"
+                placeholder="Your name"
                 required
               />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="email">E-mail *</label>
               <input
-                id="email"
                 v-model="form.email"
-                class="form-input"
+                class="c-form__input"
                 type="email"
-                placeholder="your@email.com"
+                placeholder="Your email"
                 required
               />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="message">Message *</label>
               <textarea
-                id="message"
                 v-model="form.message"
-                class="form-input form-textarea"
-                placeholder="What would you like to talk about? ✨"
+                class="c-form__input c-form__textarea"
+                placeholder="Your message..."
                 rows="5"
                 required
               />
-            </div>
-
-            <button
-              type="submit"
-              class="btn btn-primary form-submit"
-              :disabled="sending"
-            >
-              {{ sending ? "⏳ Sending..." : "💌 Send message" }}
-            </button>
-          </form>
-
-          <div v-if="sent" class="after-sent">
-            <button class="btn btn-outline" @click="sent = false">
-              Send another message
-            </button>
-          </div>
-        </div>
-
-        <!-- Info -->
-        <div class="contact-info">
-          <h2 class="contact-info__title">Other ways to reach me</h2>
-
-          <div class="contact-email-card">
-            <span class="contact-email-card__icon">✉️</span>
-            <div>
-              <p class="contact-email-card__label">E-mail</p>
-              <a
-                href="mailto:hello@carolinecrafts.com"
-                class="contact-email-card__addr"
+              <button
+                type="submit"
+                class="btn btn-primary c-form__submit"
+                :disabled="sending"
               >
-                hello@carolinecrafts.com
+                {{ sending ? "Sending…" : "Send Message" }}
+              </button>
+            </form>
+          </div>
+
+          <!-- Social follow -->
+          <div class="social-follow">
+            <span class="social-follow__label">Follow me on:</span>
+            <div class="social-cards">
+              <!-- Instagram -->
+              <a
+                href="https://www.instagram.com"
+                target="_blank"
+                rel="noopener"
+                class="social-card"
+              >
+                <div class="social-card__icon">
+                  <img :src="instagramIcon" alt="Instagram" />
+                </div>
+                <span class="social-card__name">Instagram</span>
+              </a>
+
+              <!-- TikTok -->
+              <a
+                href="https://www.tiktok.com"
+                target="_blank"
+                rel="noopener"
+                class="social-card"
+              >
+                <div class="social-card__icon">
+                  <img :src="tiktokIcon" alt="TikTok" />
+                </div>
+                <span class="social-card__name">TikTok</span>
               </a>
             </div>
-          </div>
-
-          <h3 class="contact-info__social-title">Social Media</h3>
-
-          <div class="social-list">
-            <a
-              v-for="s in socials"
-              :key="s.name"
-              :href="s.href"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="social-item"
-              :style="{ background: s.bg }"
-            >
-              <div class="social-item__icon">{{ s.icon }}</div>
-              <div class="social-item__body">
-                <strong>{{ s.name }}</strong>
-                <span class="social-item__handle">{{ s.handle }}</span>
-                <span class="social-item__desc">{{ s.desc }}</span>
-              </div>
-              <span class="social-item__arrow" :style="{ color: s.color }"
-                >→</span
-              >
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── FAQ ──────────────────────────────────────── -->
-    <section class="section faq-section">
-      <div class="container">
-        <h2 class="section-title" style="margin-bottom: 32px">
-          Frequently Asked Questions
-        </h2>
-
-        <div class="faq-grid">
-          <div class="faq-card">
-            <h4 class="faq-card__q">🛒 Where can I buy your products?</h4>
-            <p class="faq-card__a">
-              All my coloring books and notebooks are available on Amazon. Just
-              search for "CarolineCrafts".
-            </p>
-          </div>
-          <div class="faq-card">
-            <h4 class="faq-card__q">📦 Do you ship internationally?</h4>
-            <p class="faq-card__a">
-              Yes! Amazon delivers my products to many countries worldwide.
-            </p>
-          </div>
-          <div class="faq-card">
-            <h4 class="faq-card__q">🎨 Can you create a custom design?</h4>
-            <p class="faq-card__a">
-              I'd love to chat about it! Send me a message and we'll discuss the
-              details.
-            </p>
-          </div>
-          <div class="faq-card">
-            <h4 class="faq-card__q">📸 Can I share your products?</h4>
-            <p class="faq-card__a">
-              Of course! Tag me on Instagram or TikTok – I love seeing your
-              work! 🌸
-            </p>
           </div>
         </div>
       </div>
@@ -225,280 +228,262 @@ const socials = [
 </template>
 
 <style scoped>
-/* ── Page Hero ─────────────────────────────────── */
+/* ── Page hero ───────────────────────────────────── */
 .page-hero {
-  padding: 120px 0 60px;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #fce4ec 0%, var(--yucca) 100%);
+  background: var(--pink-bg);
+  padding: 110px 0 80px;
+  text-align: center;
 }
 
-.page-hero__content {
+.page-hero__inner {
   position: relative;
   z-index: 1;
 }
 
 .page-hero__eyebrow {
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--primrose);
-  margin-bottom: 8px;
+  font-family: var(--font-accent);
+  font-size: 2rem;
+  color: var(--primrose-deep);
+  display: block;
+  margin-bottom: 10px;
 }
 
 .page-hero__title {
-  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-family: var(--font-heading);
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
   color: var(--dark);
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .page-hero__sub {
-  color: var(--mid);
   font-size: 1rem;
-  max-width: 500px;
+  color: var(--mid);
+  max-width: 520px;
+  margin: 0 auto;
   line-height: 1.7;
 }
 
-/* ── Contact grid ──────────────────────────────── */
+/* ── Contact section ─────────────────────────────── */
 .contact-section {
-  background: var(--white);
+  background: var(--pink-bg);
 }
 
-.contact-grid {
+.contact-cols {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 64px;
+  grid-template-columns: 1fr 1.05fr;
+  gap: 48px;
   align-items: start;
 }
 
-/* ── Form ──────────────────────────────────────── */
-.contact-form-wrap__title {
-  font-size: 1.6rem;
-  color: var(--dark);
-  margin-bottom: 6px;
+@media (max-width: 840px) {
+  .contact-cols {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
 }
 
-.contact-form-wrap__sub {
-  color: var(--mid);
-  font-size: 0.88rem;
-  margin-bottom: 28px;
-}
-
-.contact-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.form-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--dark);
-}
-
-.form-input {
-  padding: 12px 16px;
-  border: 1.5px solid var(--yucca-dark);
-  border-radius: var(--radius-md);
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  color: var(--dark);
-  background: var(--yucca);
-  transition:
-    border-color var(--transition),
-    box-shadow var(--transition);
-  outline: none;
-  width: 100%;
-}
-
-.form-input:focus {
-  border-color: var(--primrose);
-  box-shadow: 0 0 0 3px rgba(242, 151, 160, 0.15);
-  background: var(--white);
-}
-
-.form-textarea {
-  resize: vertical;
-  min-height: 130px;
-}
-
-.form-submit {
-  align-self: flex-start;
-}
-
-.form-submit:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.success-banner {
-  background: #e8f5e9;
-  border: 1.5px solid #a5d6a7;
-  color: #2e7d32;
-  border-radius: var(--radius-md);
-  padding: 16px 20px;
-  font-size: 0.95rem;
-  margin-bottom: 20px;
-}
-
-.after-sent {
-  margin-top: 16px;
-}
-
-/* ── Info ──────────────────────────────────────── */
-.contact-info__title {
-  font-size: 1.6rem;
-  color: var(--dark);
-  margin-bottom: 24px;
-}
-
-.contact-email-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  background: var(--yucca);
-  border-radius: var(--radius-md);
-  padding: 18px 20px;
-  margin-bottom: 28px;
-}
-
-.contact-email-card__icon {
-  font-size: 1.8rem;
-}
-
-.contact-email-card__label {
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--mid);
-  margin-bottom: 2px;
-}
-
-.contact-email-card__addr {
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: var(--primrose);
-  word-break: break-all;
-  transition: color var(--transition);
-}
-
-.contact-email-card__addr:hover {
-  color: #e8808a;
-}
-
-.contact-info__social-title {
-  font-size: 1rem;
-  color: var(--dark);
-  margin-bottom: 14px;
+/* ── FAQ col ─────────────────────────────────────── */
+.faq-col__heading {
   font-family: var(--font-heading);
+  font-size: 1.75rem;
+  color: var(--dark);
+  margin-bottom: 28px;
+  line-height: 1.3;
 }
 
-.social-list {
+.faq-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.social-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+.faq-item {
+  background: var(--white);
   border-radius: var(--radius-md);
-  padding: 16px 18px;
-  transition:
-    transform var(--transition),
-    box-shadow var(--transition);
   box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  transition: box-shadow var(--transition);
 }
 
-.social-item:hover {
-  transform: translateX(4px);
+.faq-item--open {
   box-shadow: var(--shadow-card);
 }
 
-.social-item__icon {
-  font-size: 1.6rem;
+.faq-item__btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--dark);
+  transition: background var(--transition);
 }
 
-.social-item__body {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.faq-item__btn:hover {
+  background: var(--lime-light);
+}
+
+.faq-item__diamond {
+  color: var(--primrose);
+  font-size: 0.65rem;
+  flex-shrink: 0;
+}
+
+.faq-item__q {
   flex: 1;
 }
 
-.social-item__body strong {
+.faq-item__arrow {
+  font-size: 0.55rem;
+  color: var(--light-text);
+  flex-shrink: 0;
+}
+
+.faq-item__answer {
+  padding: 12px 20px 18px 44px;
+  font-size: 0.9rem;
+  color: var(--mid);
+  line-height: 1.7;
+}
+
+/* FAQ height animation handled by JS hooks in script */
+
+/* ── Form card ───────────────────────────────────── */
+.form-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 36px 34px 32px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+}
+
+.form-card__title {
+  font-family: var(--font-heading);
+  font-size: 1.9rem;
+  color: var(--dark);
+  margin-bottom: 6px;
+}
+
+.form-card__sub {
+  font-size: 0.9rem;
+  color: var(--mid);
+  margin-bottom: 24px;
+}
+
+.success-msg {
+  background: var(--lime-light);
+  color: var(--lime-dark);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.c-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.c-form__input {
+  width: 100%;
+  padding: 13px 18px;
+  border: 1.5px solid #f0dde0;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
   font-size: 0.9rem;
   color: var(--dark);
+  background: var(--pink-bg);
+  outline: none;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
 }
 
-.social-item__handle {
-  font-size: 0.8rem;
+.c-form__input::placeholder {
+  color: var(--light-text);
+}
+
+.c-form__input:focus {
+  border-color: var(--primrose);
+  box-shadow: 0 0 0 3px rgba(242, 151, 160, 0.18);
+}
+
+.c-form__textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.c-form__submit {
+  width: 100%;
+  margin-top: 4px;
+}
+.c-form__submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Social follow ───────────────────────────────── */
+.social-follow__label {
+  font-family: var(--font-accent);
+  font-size: 1.3rem;
   color: var(--mid);
+  display: block;
+  margin-bottom: 14px;
 }
 
-.social-item__desc {
-  font-size: 0.75rem;
-  color: var(--mid);
-  opacity: 0.8;
-}
-
-.social-item__arrow {
-  font-size: 1.2rem;
-  font-weight: 600;
-  transition: transform var(--transition);
-}
-
-.social-item:hover .social-item__arrow {
-  transform: translateX(4px);
-}
-
-/* ── FAQ ───────────────────────────────────────── */
-.faq-section {
-  background: var(--yucca);
-}
-
-.faq-grid {
+.social-cards {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
 }
 
-.faq-card {
+.social-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 14px;
   background: var(--white);
   border-radius: var(--radius-md);
-  padding: 24px 26px;
-  box-shadow: var(--shadow-soft);
-  border-left: 4px solid var(--primrose);
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
 }
 
-.faq-card__q {
-  font-size: 0.95rem;
+.social-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+.social-card__icon {
+  width: 52px;
+  height: 52px;
+  margin-top: 4px;
+}
+.social-card__icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.social-card__name {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.85rem;
   color: var(--dark);
-  margin-bottom: 10px;
-}
-
-.faq-card__a {
-  font-size: 0.88rem;
-  color: var(--mid);
-  line-height: 1.65;
-}
-
-/* ── Responsive ────────────────────────────────── */
-@media (max-width: 900px) {
-  .contact-grid {
-    grid-template-columns: 1fr;
-  }
-  .faq-grid {
-    grid-template-columns: 1fr;
-  }
 }
 </style>

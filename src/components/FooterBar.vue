@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
+import logoImg from "../assets/images/logo.png";
 </script>
 
 <template>
   <footer class="footer">
     <div class="container footer__inner">
       <div class="footer__brand">
-        <span class="footer__logo">🌸 Caroline<strong>Crafts</strong></span>
+        <div class="footer__logo">
+          <img
+            :src="logoImg"
+            alt="CarolineCrafts logo"
+            class="footer__logo-img"
+          />
+          Caroline<strong>Crafts</strong>
+        </div>
         <p class="footer__tagline">
           Handcrafted coloring books and notebooks<br />
           made with love for every creator ✨
@@ -16,10 +24,7 @@ import { RouterLink } from "vue-router";
       <div class="footer__col">
         <h4 class="footer__heading">Navigation</h4>
         <RouterLink to="/" class="footer__link">Home</RouterLink>
-        <RouterLink to="/coloring-books" class="footer__link"
-          >Coloring Books</RouterLink
-        >
-        <RouterLink to="/notebooks" class="footer__link">Notebooks</RouterLink>
+        <RouterLink to="/products" class="footer__link">Products</RouterLink>
         <RouterLink to="/contact" class="footer__link">Contact</RouterLink>
       </div>
 
@@ -62,9 +67,10 @@ import { RouterLink } from "vue-router";
 
 <style scoped>
 .footer {
-  background: var(--dark);
-  color: var(--pinktone);
+  background: var(--pink-bg);
+  color: var(--dark);
   padding-top: 60px;
+  border-top: 1px solid var(--pinktone);
 }
 
 .footer__inner {
@@ -81,18 +87,25 @@ import { RouterLink } from "vue-router";
 }
 
 .footer__logo {
+  display: flex;
+  align-items: center;
   font-family: var(--font-heading);
   font-size: 1.4rem;
-  color: var(--white);
+  color: var(--dark);
+}
+
+.footer__logo-img {
+  width: 50px;
+  margin-right: 12px;
 }
 
 .footer__logo strong {
-  color: var(--primrose);
+  color: var(--primrose-deep);
 }
 
 .footer__tagline {
   font-size: 0.88rem;
-  color: #c4a4a4;
+  color: var(--mid);
   line-height: 1.7;
 }
 
@@ -105,14 +118,14 @@ import { RouterLink } from "vue-router";
 .footer__heading {
   font-family: var(--font-heading);
   font-size: 1rem;
-  color: var(--white);
+  color: var(--dark);
   margin-bottom: 4px;
 }
 
 .footer__link,
 .footer__social {
   font-size: 0.88rem;
-  color: #c4a4a4;
+  color: var(--mid);
   transition: color var(--transition);
   display: flex;
   align-items: center;
@@ -121,7 +134,7 @@ import { RouterLink } from "vue-router";
 
 .footer__link:hover,
 .footer__social:hover {
-  color: var(--primrose);
+  color: var(--primrose-deep);
 }
 
 .footer__social-icon {
@@ -129,11 +142,11 @@ import { RouterLink } from "vue-router";
 }
 
 .footer__bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--pinktone);
   padding: 16px 24px;
   text-align: center;
   font-size: 0.82rem;
-  color: #9a8080;
+  color: var(--mid);
 }
 
 @media (max-width: 768px) {

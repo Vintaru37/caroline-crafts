@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
+import logoImg from "../assets/images/logo.png";
 
 const route = useRoute();
 const menuOpen = ref(false);
 
 const navLinks = [
   { to: "/", label: "Home" },
-  { to: "/coloring-books", label: "Coloring Books" },
-  { to: "/notebooks", label: "Notebooks" },
+  { to: "/products", label: "Products" },
   { to: "/contact", label: "Contact" },
 ];
 
@@ -22,7 +22,11 @@ function closeMenu() {
     <div class="container navbar__inner">
       <!-- Logo -->
       <RouterLink to="/" class="navbar__logo" @click="closeMenu">
-        <span class="navbar__logo-icon">🌸</span>
+        <img
+          :src="logoImg"
+          alt="CarolineCrafts logo"
+          class="navbar__logo-img"
+        />
         <span class="navbar__logo-text">Caroline<strong>Crafts</strong></span>
       </RouterLink>
 
@@ -92,10 +96,10 @@ function closeMenu() {
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(243, 235, 216, 0.95);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 244, 245, 0.97);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--pinktone);
-  box-shadow: 0 2px 16px rgba(61, 43, 43, 0.08);
+  box-shadow: 0 2px 20px rgba(242, 151, 160, 0.1);
 }
 
 .navbar__inner {
@@ -120,8 +124,10 @@ function closeMenu() {
   opacity: 0.8;
 }
 
-.navbar__logo-icon {
-  font-size: 1.5rem;
+.navbar__logo-img {
+  height: 52px;
+  display: block;
+  object-fit: contain;
 }
 
 .navbar__logo-text strong {
@@ -139,7 +145,8 @@ function closeMenu() {
   padding: 6px 14px;
   border-radius: 50px;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
+  font-family: var(--font-body);
   color: var(--mid);
   transition:
     color var(--transition),
@@ -148,8 +155,8 @@ function closeMenu() {
 
 .navbar__link:hover,
 .navbar__link.active {
-  color: var(--dark);
-  background: var(--pinktone);
+  color: var(--primrose-deep);
+  background: var(--primrose-light);
 }
 
 .navbar__cta {
@@ -204,7 +211,7 @@ function closeMenu() {
   flex-direction: column;
   gap: 4px;
   padding: 16px 24px 20px;
-  background: var(--yucca);
+  background: var(--white);
   border-top: 1px solid var(--pinktone);
 }
 
@@ -220,8 +227,8 @@ function closeMenu() {
 
 .navbar__mobile-link:hover,
 .navbar__mobile-link.active {
-  background: var(--pinktone);
-  color: var(--dark);
+  background: var(--primrose-light);
+  color: var(--primrose-deep);
 }
 
 .navbar__mobile-cta {

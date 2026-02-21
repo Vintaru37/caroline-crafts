@@ -10,14 +10,17 @@ const router = createRouter({
       component: HomeView,
     },
     {
+      path: "/products",
+      name: "products",
+      component: () => import("../views/ProductsView.vue"),
+    },
+    {
       path: "/coloring-books",
-      name: "coloring-books",
-      component: () => import("../views/ColoringBooksView.vue"),
+      redirect: { name: "products", query: { kind: "coloring-books" } },
     },
     {
       path: "/notebooks",
-      name: "notebooks",
-      component: () => import("../views/NotebooksView.vue"),
+      redirect: { name: "products", query: { kind: "notebooks" } },
     },
     {
       path: "/contact",
