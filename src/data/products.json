@@ -1,0 +1,392 @@
+[
+  {
+    "id": "book-1",
+    "category": "coloring-book",
+    "title": "Cozy Awawa",
+    "desc": "Rock Hyrax Coloring Book – Diverse Designs for Kids & Adults. Discover the charming world of rock hyraxes – adorable little mountain animals living among stones and cliffs!",
+    "tag": "bestseller",
+    "image": "cozy-awawa.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-2",
+    "category": "coloring-book",
+    "title": "Little Reminders",
+    "desc": "Little Reminders is a soft, cozy, and comforting coloring book designed to help you slow down, relax, and reconnect with gentle thoughts.",
+    "tag": "",
+    "image": "little-reminders.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-3",
+    "category": "coloring-book",
+    "title": "Cozy Capybaras",
+    "desc": "Take a break, grab your favorite colors, and step into a world of calm with the Cozy Capybaras Coloring Book.",
+    "tag": "",
+    "image": "cozy-capybaras.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-4",
+    "category": "coloring-book",
+    "title": "Wrapped in Love",
+    "desc": "Step into a world of warmth, sweetness, and romance with Wrapped in Love, a delightful Valentine's Day coloring book designed to help you relax, smile, and celebrate love in all its forms.",
+    "tag": "",
+    "image": "wrapped-in-love.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-5",
+    "category": "coloring-book",
+    "title": "Just Girly Stuff",
+    "desc": "Just Girly Stuff is a cute and cozy coloring book created especially for girls, teens, and women who love all things aesthetic, soft, and relaxing.",
+    "tag": "",
+    "image": "just-girly-stuff.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-6",
+    "category": "coloring-book",
+    "title": "Just Awawa Days",
+    "desc": "Rock Hyrax Coloring Book, inspired by manga, anime, and kawaii art styles. Inside you'll find adorable black-and-white coloring pages.",
+    "tag": "",
+    "image": "just-awawa-days.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-7",
+    "category": "coloring-book",
+    "title": "Zen Japan",
+    "desc": "Escape into the peaceful beauty of Japan with this Zen Japan Coloring Book, created to help you relax, unwind, and enjoy mindful creativity.",
+    "tag": "",
+    "image": "zen-japan.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-8",
+    "category": "coloring-book",
+    "title": "Busy Little Awawa",
+    "desc": "Meet the Busy Little Awawa — a curious rock hyrax who never gets bored!",
+    "tag": "",
+    "image": "busy-little-awawa.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-9",
+    "category": "coloring-book",
+    "title": "Merry Moments",
+    "desc": "Celebrate the magic of the holiday season with Merry Moments, a charming Christmas coloring book designed to bring warmth, joy, and creativity to artists of all ages.",
+    "tag": "",
+    "image": "merry-moments-holiday.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-10",
+    "category": "coloring-book",
+    "title": "Little Adventures",
+    "desc": "Step into a charming fantasy world with the Little Adventures Coloring Book — a delightful collection of magical, easy-to-color illustrations.",
+    "tag": "",
+    "image": "little-adventures.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-11",
+    "category": "coloring-book",
+    "title": "Chill Spirits",
+    "desc": "Chill Spirits – Relaxing Coloring Book for Adults, Teens & Kids. Take a break from the spooky and embrace the cozy!",
+    "tag": "",
+    "image": "chill-spirits.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-12",
+    "category": "coloring-book",
+    "title": "Self Love",
+    "desc": "Take a moment for yourself with Self Love – a bold and easy self-care coloring book for all ages.",
+    "tag": "",
+    "image": "self-love.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-13",
+    "category": "coloring-book",
+    "title": "Spooky Season",
+    "desc": "Get ready for a relaxing and fun coloring journey! This Spooky Season Coloring Book brings you unique illustrations of cute animals in autumn and Halloween settings.",
+    "tag": "",
+    "image": "spooky-season.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-14",
+    "category": "coloring-book",
+    "title": "Cuteness Overload",
+    "desc": "This unique coloring book was designed with bold, thick outlines, making it perfect for stress-free coloring and relaxation.",
+    "tag": "",
+    "image": "cuteness-overload.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-15",
+    "category": "coloring-book",
+    "title": "The Dog Days Diaries",
+    "desc": "The Dog Days Diaries is a charming coloring book featuring delightful scenes of an adventurous little dog living life to the fullest!",
+    "tag": "",
+    "image": "dog-days-diaries.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-16",
+    "category": "coloring-book",
+    "title": "Whole Year with Alice and Theo",
+    "desc": "Join Alice and Theo — two best friends — on a joyful journey through the seasons!",
+    "tag": "",
+    "image": "whole-year-with-alice-and-theo.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-17",
+    "category": "coloring-book",
+    "title": "Time With Nature",
+    "desc": "Time with Nature is a relaxing coloring book for both kids and adults, taking you on a peaceful journey through forests, fields, and lakes.",
+    "tag": "",
+    "image": "time-with-nature.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-18",
+    "category": "coloring-book",
+    "title": "No Thoughts, Only Awawa",
+    "desc": "No Thoughts, Only Awawa – Creative and Relaxing Coloring Books inspired by rock hyrax characters.",
+    "tag": "bestseller",
+    "image": "no-thoughts-only-awawa.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-19",
+    "category": "coloring-book",
+    "title": "Furry Friends Costume Party",
+    "desc": "Furry Friends Costume Party is a delightful coloring book featuring adorable animals in playful costumes.",
+    "tag": "",
+    "image": "furry-friends.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-20",
+    "category": "coloring-book",
+    "title": "Cute Food",
+    "desc": "Get ready for a deliciously fun coloring adventure! This adorable coloring book is filled with smiling fruits, happy veggies, and sweet treats.",
+    "tag": "",
+    "image": "cute-food.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-21",
+    "category": "coloring-book",
+    "title": "Merry Moments Holiday",
+    "desc": "A cozy collection of holiday and seasonal scenes to color, perfect for gifting and relaxation.",
+    "tag": "",
+    "image": "merry-moments-holiday.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "book-22",
+    "category": "coloring-book",
+    "title": "Huggy Friends",
+    "desc": "Meet Huggy Friends - a cute and relaxing animal coloring book made for both kids and adults who love sweet characters and cozy moments.",
+    "tag": "",
+    "image": "huggy-friends.webp",
+    "amazonUrl": "",
+    "notebookType": ""
+  },
+  {
+    "id": "nb-1",
+    "category": "notebook",
+    "title": "Cute Axolotl",
+    "desc": "Make school and writing more fun with this Cute Axolotl Composition Notebook! The cover features an adorable pink axolotl surrounded by bubbles, stars, shells, and underwater plants in a colorful kawaii style.",
+    "tag": "Bestseller",
+    "image": "cute-axolotl.webp",
+    "amazonUrl": "",
+    "notebookType": "Bullet Journal"
+  },
+  {
+    "id": "nb-2",
+    "category": "notebook",
+    "title": "Coquette Bunny",
+    "desc": "Enter a dreamy fairytale world with this Coquette Bunny Lined Notebook.",
+    "tag": "",
+    "image": "coquette-bunny.webp",
+    "amazonUrl": "",
+    "notebookType": "Lined"
+  },
+  {
+    "id": "nb-6",
+    "category": "notebook",
+    "title": "Cute Coquette Bunny",
+    "desc": "Step into a dreamy, romantic world with this Cute Bunny Coquette Lined Notebook.",
+    "tag": "",
+    "image": "cute-coquette-bunny.webp",
+    "amazonUrl": "",
+    "notebookType": "Lined"
+  },
+  {
+    "id": "nb-7",
+    "category": "notebook",
+    "title": "Happy Like Quokka",
+    "desc": "This adorable notebook is a true boost of positive energy!",
+    "tag": "",
+    "image": "happy-like-quokka.webp",
+    "amazonUrl": "",
+    "notebookType": "Journal"
+  },
+  {
+    "id": "nb-8",
+    "category": "notebook",
+    "title": "Awawa Rock Hyrax",
+    "desc": "Celebrate love in the cutest way possible with this Awawa Rock Hyrax Love Notebook.",
+    "tag": "",
+    "image": "awawa-rock-hyrax-love.webp",
+    "amazonUrl": "",
+    "notebookType": "Lined"
+  },
+  {
+    "id": "nb-9",
+    "category": "notebook",
+    "title": "Be My Valentine",
+    "desc": "Looking for a sweet and unique Valentine's Day gift? This Valentine's Day notebook features a cute animal love design with an adorable Awawa (rock hyrax) couple.",
+    "tag": "",
+    "image": "be-my-valentine.webp",
+    "amazonUrl": "",
+    "notebookType": "Lined"
+  },
+  {
+    "id": "nb-10",
+    "category": "notebook",
+    "title": "Rock Hyrax Valentine",
+    "desc": "Fall in love with cuteness! This Rock Hyrax Valentine Lined Notebook features an adorable rock hyrax wearing heart-shaped glasses, surrounded by floating hearts in a soft watercolor style.",
+    "tag": "",
+    "image": "rock-hyrax-valentine.webp",
+    "amazonUrl": "",
+    "notebookType": "Lined"
+  },
+  {
+    "id": "nb-11",
+    "category": "notebook",
+    "title": "The World Is Better With You In It",
+    "desc": "You matter. The world is better with you in it.",
+    "tag": "",
+    "image": "better-with-you.webp",
+    "amazonUrl": "",
+    "notebookType": "Composition"
+  },
+  {
+    "id": "nb-12",
+    "category": "notebook",
+    "title": "There's No Need to Rush",
+    "desc": "Take a breath. You don't have to rush.",
+    "tag": "",
+    "image": "no-need-to-rush.webp",
+    "amazonUrl": "",
+    "notebookType": "Lined"
+  },
+  {
+    "id": "nb-13",
+    "category": "notebook",
+    "title": "Kawaii Rock Hyrax Awawa",
+    "desc": "Add a touch of sweetness and calm to your everyday writing with this Cute Kawaii Rock Hyrax Lined Notebook.",
+    "tag": "",
+    "image": "cute-kawaii-rock-hyrax.webp",
+    "amazonUrl": "",
+    "notebookType": "Lined"
+  },
+  {
+    "id": "nb-14",
+    "category": "notebook",
+    "title": "Kawaii Opossum",
+    "desc": "Fall in love with cozy nighttime vibes with this Cute Kawaii Opossum Lined Notebook!",
+    "tag": "",
+    "image": "cute-kawaii-opossum.webp",
+    "amazonUrl": "",
+    "notebookType": "Lined"
+  },
+  {
+    "id": "nb-15",
+    "category": "notebook",
+    "title": "Eat Healthy Rock Hyrax",
+    "desc": "Eat Healthy, Write Freely!",
+    "tag": "",
+    "image": "eat-healthy-awawa.webp",
+    "amazonUrl": "",
+    "notebookType": "Lined"
+  },
+  {
+    "id": "nb-16",
+    "category": "notebook",
+    "title": "Cute Otter",
+    "desc": "Stay organized and creative with this Cute Otter Grid Notebook, featuring a sweet watercolor otter holding a little stone on the cover.",
+    "tag": "",
+    "image": "cute-otter-grid.webp",
+    "amazonUrl": "",
+    "notebookType": "Grid"
+  },
+  {
+    "id": "nb-17",
+    "category": "notebook",
+    "title": "Christmas Ornaments Rock Hyrax",
+    "desc": "Write your holiday notes in cozy style with this Cute Rock Hyrax Lined Notebook!",
+    "tag": "",
+    "image": "christmas-ornaments-rock-hyrax.webp",
+    "amazonUrl": "",
+    "notebookType": "Lined"
+  },
+  {
+    "id": "nb-18",
+    "category": "notebook",
+    "title": "Cute Quokka",
+    "desc": "Stay organized and inspired with this Cute Quokka Grid Notebook, featuring an adorable watercolor quokka holding a little green leaf.",
+    "tag": "",
+    "image": "cute-quokka-grid.webp",
+    "amazonUrl": "",
+    "notebookType": "Grid"
+  },
+  {
+    "id": "nb-19",
+    "category": "notebook",
+    "title": "Santa Hat Rock Hyrax",
+    "desc": "Bring smiles, relaxation, and a little holiday humor to your writing with this Cute Rock Hyrax Christmas Notebook!",
+    "tag": "",
+    "image": "hyrax-santa-hat.webp",
+    "amazonUrl": "",
+    "notebookType": "Lined"
+  },
+  {
+    "id": "nb-20",
+    "category": "notebook",
+    "title": "Christmas Rock Hyrax",
+    "desc": "Celebrate the holiday season with this charming Rock Hyrax Christmas Notebook!",
+    "tag": "",
+    "image": "ready-for-christmas.webp",
+    "amazonUrl": "",
+    "notebookType": "Lined"
+  }
+]

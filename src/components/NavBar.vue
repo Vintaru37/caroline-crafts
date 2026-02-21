@@ -122,7 +122,13 @@ function closeMenu() {
   transition:
     opacity var(--transition),
     transform var(--transition);
+    /* font-weight: bold; */
 }
+
+/* .navbar__logo-accent {
+  font-family: var(--font-accent);
+  font-size: 1.6rem;
+} */
 
 .navbar__logo:hover {
   opacity: 0.85;

@@ -624,7 +624,7 @@ import heroNotebook3 from "../assets/images/notebooks/happy-like-quokka.webp";
   width: 230px;
   height: 230px;
   top: 18px;
-  left: 136px;
+  left: 120px;
   z-index: 4;
   --rot: 2deg;
   animation-duration: 6.4s;

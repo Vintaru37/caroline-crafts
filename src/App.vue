@@ -1,13 +1,18 @@
 <script setup lang="ts">
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 import NavBar from "./components/NavBar.vue";
 import FooterBar from "./components/FooterBar.vue";
 import CursorSparkles from "./components/CursorSparkles.vue";
+
+const route = useRoute();
+const isAdmin = computed(() => route.name === "admin");
 </script>
 
 <template>
   <div id="app-root">
-    <CursorSparkles />
-    <NavBar />
+    <CursorSparkles v-if="!isAdmin" />
+    <NavBar v-if="!isAdmin" />
 
     <RouterView v-slot="{ Component }">
       <Transition name="fade" mode="out-in">
@@ -15,7 +20,7 @@ import CursorSparkles from "./components/CursorSparkles.vue";
       </Transition>
     </RouterView>
 
-    <FooterBar />
+    <FooterBar v-if="!isAdmin" />
   </div>
 </template>
 

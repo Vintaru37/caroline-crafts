@@ -5,10 +5,10 @@ import FloatingDecor from "../components/FloatingDecor.vue";
 import ColoringBookCard from "../components/ColoringBookCard.vue";
 import NotebookCard from "../components/NotebookCard.vue";
 import { useReveal } from "../composables/useReveal";
-import { coloringBooks } from "../data/coloringBooks";
-import { notebooks } from "../data/notebooks";
+import { useProducts } from "../composables/useProducts";
 
 const { refresh } = useReveal();
+const { coloringBookList, notebookList } = useProducts();
 
 type ProductKind = "all" | "coloring-books" | "notebooks";
 
@@ -19,6 +19,7 @@ type Product = {
   title: string;
   desc: string;
   tag: string;
+  amazonUrl?: string;
 };
 
 const CardComponentByKind = {
@@ -27,23 +28,25 @@ const CardComponentByKind = {
 } as const;
 
 const allProducts = computed<Product[]>(() => {
-  const books: Product[] = coloringBooks.map((b) => ({
+  const books: Product[] = coloringBookList.value.map((b) => ({
     id: `book-${b.id}`,
     kind: "coloring-books",
     image: b.image,
     title: b.title,
     desc: b.desc,
     tag: b.tag,
+    amazonUrl: b.amazonUrl,
   }));
 
-  const nbs: Product[] = notebooks.map((n) => ({
+  const nbs: Product[] = notebookList.value.map((n) => ({
     id: `nb-${n.id}`,
     kind: "notebooks",
     image: n.image,
     title: n.title,
     desc: n.desc,
-    metaB: n.type,
+    metaB: n.notebookType,
     tag: n.tag,
+    amazonUrl: n.amazonUrl,
   }));
 
   return [...books, ...nbs];
@@ -393,7 +396,7 @@ watch(q, (newVal, oldVal) => {
 .search__icon {
   position: absolute;
   left: 12px;
-  top: 50%;
+  top: 47%;
   transform: translateY(-50%);
   display: flex;
   align-items: center;

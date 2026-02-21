@@ -5,6 +5,7 @@ const props = defineProps<{
     title: string;
     desc: string;
     tag: string;
+    amazonUrl?: string;
   };
 }>();
 </script>
@@ -30,7 +31,7 @@ const props = defineProps<{
 
       <a
         class="product-card__link"
-        href="https://www.amazon.com"
+        :href="props.product.amazonUrl || 'https://www.amazon.com'"
         target="_blank"
         rel="noopener noreferrer"
       >

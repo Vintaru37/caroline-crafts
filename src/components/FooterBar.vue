@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
 import logoImg from "../assets/images/logo.png";
+import instagramImg from "../assets/images/instagram-icon.png";
+import tiktokImg from "../assets/images/tiktok-icon.png";
+import amazonImg from "../assets/images/amazon-icon.png";
 </script>
 
 <template>
@@ -36,7 +39,12 @@ import logoImg from "../assets/images/logo.png";
           rel="noopener noreferrer"
           class="footer__social"
         >
-          <span class="footer__social-icon">📸</span> Instagram
+          <img
+            :src="instagramImg"
+            alt="Instagram"
+            class="footer__social-icon"
+          />
+          Instagram
         </a>
         <a
           href="https://www.tiktok.com"
@@ -44,7 +52,8 @@ import logoImg from "../assets/images/logo.png";
           rel="noopener noreferrer"
           class="footer__social"
         >
-          <span class="footer__social-icon">🎵</span> TikTok
+          <img :src="tiktokImg" alt="TikTok" class="footer__social-icon" />
+          TikTok
         </a>
         <a
           href="https://www.amazon.com"
@@ -52,7 +61,8 @@ import logoImg from "../assets/images/logo.png";
           rel="noopener noreferrer"
           class="footer__social"
         >
-          <span class="footer__social-icon">🛒</span> Amazon
+          <img :src="amazonImg" alt="Amazon" class="footer__social-icon" />
+          Amazon
         </a>
       </div>
     </div>
@@ -138,7 +148,10 @@ import logoImg from "../assets/images/logo.png";
 }
 
 .footer__social-icon {
-  font-size: 1rem;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  margin-right: 8px;
 }
 
 .footer__bottom {

@@ -27,6 +27,11 @@ const router = createRouter({
       name: "contact",
       component: () => import("../views/ContactView.vue"),
     },
+    {
+      path: "/admin",
+      name: "admin",
+      component: () => import("../views/AdminView.vue"),
+    },
   ],
   scrollBehavior() {
     return { top: 0, behavior: "smooth" };

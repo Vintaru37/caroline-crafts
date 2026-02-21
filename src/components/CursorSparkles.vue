@@ -15,36 +15,59 @@ function rand(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }
 
-let lastSpawnTime = 0;
 const THROTTLE_MS = 50; // ~20 sparks/sec max
+const POOL_SIZE = 36;
+let lastSpawnTime = 0;
+
+const pool: HTMLSpanElement[] = [];
+const free: HTMLSpanElement[] = [];
+
+const onAnimEnd = (e: AnimationEvent) => {
+  const el = e.currentTarget as HTMLSpanElement;
+  el.classList.remove("active");
+  el.style.cssText = "";
+  if (!free.includes(el)) free.push(el);
+};
+
+function makeSpark() {
+  const el = document.createElement("span") as HTMLSpanElement;
+  el.className = "cursor-spark";
+  el.addEventListener("animationend", onAnimEnd as EventListener);
+  document.body.appendChild(el);
+  pool.push(el);
+  free.push(el);
+}
+
+function initPool() {
+  for (let i = 0; i < POOL_SIZE; i++) makeSpark();
+}
 
 function spawnSpark(x: number, y: number) {
-  const el = document.createElement("span");
-  el.className = "cursor-spark";
-  const symbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)] ?? "✦";
-  el.textContent = symbol;
+  const el = free.pop() ?? pool[Math.floor(Math.random() * pool.length)];
+  if (!el) return;
 
-  const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+  const symbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)] ?? "✦";
+  const color = COLORS[Math.floor(Math.random() * COLORS.length)] ?? "#f9c6d0";
   const size = rand(0.65, 1.15);
-  const angle = rand(-55, 55); // horizontal drift
-  const rise = rand(66, 72); // how far it floats up
+  const angle = rand(-55, 55);
+  const rise = rand(66, 72);
   const duration = rand(600, 1050);
   const rotate = rand(-40, 40);
 
-  el.style.cssText = `
-    left: ${x}px;
-    top: ${y}px;
-    font-size: ${size}rem;
-    color: ${color};
-    --rise: -${rise}px;
-    --drift: ${angle}px;
-    --rot: ${rotate}deg;
-    animation-duration: ${duration}ms;
-  `;
+  el.textContent = symbol;
+  el.style.left = `${x}px`;
+  el.style.top = `${y}px`;
+  el.style.fontSize = `${size}rem`;
+  el.style.color = color;
+  el.style.setProperty("--rise", `-${rise}px`);
+  el.style.setProperty("--drift", `${angle}px`);
+  el.style.setProperty("--rot", `${rotate}deg`);
+  el.style.animationDuration = `${duration}ms`;
 
-  document.body.appendChild(el);
-
-  el.addEventListener("animationend", () => el.remove(), { once: true });
+  el.classList.remove("active");
+  // force reflow to restart animation
+  void el.offsetWidth;
+  el.classList.add("active");
 }
 
 function onMouseMove(e: MouseEvent) {
@@ -54,8 +77,21 @@ function onMouseMove(e: MouseEvent) {
   spawnSpark(e.clientX, e.clientY);
 }
 
-onMounted(() => window.addEventListener("mousemove", onMouseMove));
-onUnmounted(() => window.removeEventListener("mousemove", onMouseMove));
+onMounted(() => {
+  initPool();
+  window.addEventListener("mousemove", onMouseMove);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("mousemove", onMouseMove);
+  // cleanup pool elements
+  for (const el of pool) {
+    el.removeEventListener("animationend", onAnimEnd as EventListener);
+    el.remove();
+  }
+  pool.length = 0;
+  free.length = 0;
+});
 </script>
 
 <template>
@@ -70,10 +106,12 @@ onUnmounted(() => window.removeEventListener("mousemove", onMouseMove));
   z-index: 99999;
   line-height: 1;
   transform-origin: center;
-  animation: cursorSparkFade linear forwards;
-  /* translate so the symbol is centered on the cursor */
   margin-left: -0.4em;
   margin-top: -0.4em;
+}
+
+.cursor-spark.active {
+  animation: cursorSparkFade linear forwards;
 }
 
 @keyframes cursorSparkFade {
