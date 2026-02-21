@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import NavBar from "./components/NavBar.vue";
 import FooterBar from "./components/FooterBar.vue";
+import CursorSparkles from "./components/CursorSparkles.vue";
 </script>
 
 <template>
   <div id="app-root">
+    <CursorSparkles />
     <NavBar />
 
     <RouterView v-slot="{ Component }">

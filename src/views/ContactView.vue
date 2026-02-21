@@ -7,46 +7,7 @@ import tiktokIcon from "../assets/images/tiktok-icon.png";
 
 useReveal();
 
-/* ── FAQ smooth height animation ─────────────────── */
-function onEnter(el: Element) {
-  const h = el as HTMLElement;
-  h.style.overflow = "hidden";
-  h.style.height = "0";
-  h.style.opacity = "0";
-  void h.offsetHeight; // force reflow
-  h.style.transition =
-    "height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease";
-  h.style.height = h.scrollHeight + "px";
-  h.style.opacity = "1";
-}
-
-function onAfterEnter(el: Element) {
-  const h = el as HTMLElement;
-  h.style.height = "";
-  h.style.overflow = "";
-  h.style.transition = "";
-  h.style.opacity = "";
-}
-
-function onLeave(el: Element) {
-  const h = el as HTMLElement;
-  h.style.overflow = "hidden";
-  h.style.height = h.scrollHeight + "px";
-  h.style.opacity = "1";
-  void h.offsetHeight; // force reflow
-  h.style.transition =
-    "height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease";
-  h.style.height = "0";
-  h.style.opacity = "0";
-}
-
-function onAfterLeave(el: Element) {
-  const h = el as HTMLElement;
-  h.style.height = "";
-  h.style.overflow = "";
-  h.style.transition = "";
-  h.style.opacity = "";
-}
+/* CSS-only FAQ slide: parent toggles `faq-item--open`, CSS animates height/padding/opacity */
 
 /* ── FAQ accordion ───────────────────────────────── */
 const faqs = [
@@ -128,17 +89,11 @@ function handleSubmit() {
                   openIndex === i ? "▲" : "▼"
                 }}</span>
               </button>
-              <Transition
-                :css="false"
-                @enter="onEnter"
-                @after-enter="onAfterEnter"
-                @leave="onLeave"
-                @after-leave="onAfterLeave"
-              >
-                <div v-show="openIndex === i" class="faq-item__answer">
-                  {{ item.a }}
+              <div class="faq-item__answer-wrap">
+                <div class="faq-item__answer">
+                  <p class="faq-item__answer-text">{{ item.a }}</p>
                 </div>
-              </Transition>
+              </div>
             </div>
           </div>
         </div>
@@ -147,7 +102,7 @@ function handleSubmit() {
         <div class="form-col reveal reveal-delay-2">
           <!-- Form card -->
           <div class="form-card">
-            <h2 class="form-card__title">Contact Us</h2>
+            <h2 class="form-card__title">Contact Me</h2>
             <p class="form-card__sub">
               Feel free to reach out — I typically reply within 24 hours 🕐
             </p>
@@ -348,14 +303,27 @@ function handleSubmit() {
   flex-shrink: 0;
 }
 
+.faq-item__answer-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 250ms ease-in-out;
+}
+
+.faq-item--open .faq-item__answer-wrap {
+  grid-template-rows: 1fr;
+}
+
 .faq-item__answer {
+  overflow: hidden;
+}
+
+.faq-item__answer-text {
   padding: 12px 20px 18px 44px;
   font-size: 0.9rem;
   color: var(--mid);
   line-height: 1.7;
+  margin: 0;
 }
-
-/* FAQ height animation handled by JS hooks in script */
 
 /* ── Form card ───────────────────────────────────── */
 .form-card {
