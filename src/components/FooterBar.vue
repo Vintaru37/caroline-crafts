@@ -67,7 +67,7 @@ import logoImg from "../assets/images/logo.png";
 
 <style scoped>
 .footer {
-  background: var(--pink-bg);
+  background: #cb6f794d;
   color: var(--dark);
   padding-top: 60px;
   border-top: 1px solid var(--pinktone);
@@ -142,7 +142,7 @@ import logoImg from "../assets/images/logo.png";
 }
 
 .footer__bottom {
-  border-top: 1px solid var(--pinktone);
+  border-top: 1px solid whitesmoke;
   padding: 16px 24px;
   text-align: center;
   font-size: 0.82rem;

@@ -53,21 +53,6 @@ import heroNotebook3 from "../assets/images/notebooks/2.png";
           Coloring books & notebooks that<br />help you slow down and
           <em>relax</em>.
         </p>
-        <div class="hero__ctas">
-          <RouterLink
-            :to="{ path: '/products', query: { kind: 'coloring-books' } }"
-            class="btn btn-primary"
-            >🎨 Coloring Books</RouterLink
-          >
-          <RouterLink
-            :to="{ path: '/products', query: { kind: 'notebooks' } }"
-            class="btn btn-lime"
-            >📓 Notebooks</RouterLink
-          >
-          <RouterLink to="/contact" class="btn btn-outline"
-            >Say hello →</RouterLink
-          >
-        </div>
         <div class="hero__pills">
           <span class="hero__pill">🛒 On Amazon</span>
           <span class="hero__pill">📦 Worldwide shipping</span>
@@ -519,14 +504,6 @@ import heroNotebook3 from "../assets/images/notebooks/2.png";
   color: var(--primrose-deep);
 }
 
-.hero__ctas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 28px;
-  animation: fadeInUp 0.7s 0.3s ease both;
-}
-
 .hero__pills {
   display: flex;
   flex-wrap: wrap;
@@ -542,7 +519,6 @@ import heroNotebook3 from "../assets/images/notebooks/2.png";
   font-size: 0.8rem;
   color: var(--mid);
   font-weight: 500;
-  backdrop-filter: blur(6px);
 }
 
 /* ─── Visual side ─── */

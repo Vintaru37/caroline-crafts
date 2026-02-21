@@ -43,19 +43,20 @@ import aboutMeImg from "../assets/images/about-me2.png";
 
 .about__inner {
   display: grid;
-  grid-template-columns: 1fr 1.4fr;
+  grid-template-columns: 270px 1fr;
   align-items: center;
+  gap: 28px;
 }
 
 .about__visual {
   position: relative;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .about__avatar {
   width: 270px;
-  aspect-ratio: 1024/1536;
   position: relative;
   z-index: 1;
 }

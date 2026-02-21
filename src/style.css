@@ -50,6 +50,12 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Offset in-page anchor targets (account for fixed header/nav) */
+#about,
+.section {
+  scroll-margin-top: 68px;
+}
+
 body {
   font-family: var(--font-body);
   background-color: var(--pink-bg);

@@ -27,7 +27,7 @@ function closeMenu() {
           alt="CarolineCrafts logo"
           class="navbar__logo-img"
         />
-        <span class="navbar__logo-text">Caroline<strong>Crafts</strong></span>
+        <span class="navbar__logo-text">Caroline<strong class="navbar__logo-accent">Crafts</strong></span>
       </RouterLink>
 
       <!-- Desktop nav -->
@@ -166,18 +166,17 @@ function closeMenu() {
   display: flex;
   align-items: center;
   gap: 4px;
+  font-family: var(--font-accent);
+  color: var(--mid);
 }
 
 .navbar__link {
   position: relative;
-  padding: 7px 18px;
+  padding: 4px 18px;
   border-radius: 50px;
-  font-size: 0.88rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  font-family: var(--font-body);
-  color: var(--mid);
   letter-spacing: 0.03em;
-  text-transform: uppercase;
   transition:
     color var(--transition),
     background var(--transition),
@@ -279,7 +278,7 @@ function closeMenu() {
 
 .navbar__burger span {
   display: block;
-  height: 2px;
+  height: 2.5px;
   background: var(--primrose-deep);
   border-radius: 2px;
   transition:
@@ -294,14 +293,14 @@ function closeMenu() {
 }
 
 .navbar__burger.open span:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
+  transform: translateY(7.5px) rotate(45deg);
 }
 .navbar__burger.open span:nth-child(2) {
   opacity: 0;
   transform: scaleX(0);
 }
 .navbar__burger.open span:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
+  transform: translateY(-7.5px) rotate(-45deg);
 }
 
 /* ─── Mobile menu ────────────────────────────────────── */
