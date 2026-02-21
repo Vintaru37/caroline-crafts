@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
-import heroBook1 from "../assets/images/coloring-books/cozy-awawa.webp";
-import heroBook2 from "../assets/images/coloring-books/just-girly-stuff.webp";
+import heroBook1 from "../assets/images/coloring-books/no-thoughts-only-awawa.webp";
+import heroBook2 from "../assets/images/coloring-books/huggy-friends.webp";
 import heroBook3 from "../assets/images/coloring-books/little-reminders.webp";
-import heroNotebook from "../assets/images/notebooks/3.png";
-import heroNotebook2 from "../assets/images/notebooks/1.png";
-import heroNotebook3 from "../assets/images/notebooks/2.png";
+import heroNotebook from "../assets/images/notebooks/cute-kawaii-rock-hyrax.webp";
+import heroNotebook2 from "../assets/images/notebooks/no-need-to-rush.webp";
+import heroNotebook3 from "../assets/images/notebooks/happy-like-quokka.webp";
 </script>
 
 <template>
@@ -445,7 +445,7 @@ import heroNotebook3 from "../assets/images/notebooks/2.png";
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
-  gap: 48px;
+  gap: 24px;
   padding-top: 48px;
   padding-bottom: 96px;
   position: relative;
@@ -579,6 +579,7 @@ import heroNotebook3 from "../assets/images/notebooks/2.png";
   position: relative;
   width: 460px;
   height: 480px;
+  margin-top: 1rem;
 }
 
 @keyframes floatBook {
@@ -609,9 +610,9 @@ import heroNotebook3 from "../assets/images/notebooks/2.png";
 }
 
 .hero__book--a {
-  width: 215px;
+  width: 230px;
   height: 230px;
-  top: 70px;
+  top: 30px;
   left: 0;
   z-index: 2;
   --rot: -11deg;
@@ -620,7 +621,7 @@ import heroNotebook3 from "../assets/images/notebooks/2.png";
 }
 
 .hero__book--b {
-  width: 220px;
+  width: 230px;
   height: 230px;
   top: 18px;
   left: 136px;
@@ -631,9 +632,9 @@ import heroNotebook3 from "../assets/images/notebooks/2.png";
 }
 
 .hero__book--c {
-  width: 215px;
+  width: 230px;
   height: 230px;
-  top: 70px;
+  top: 30px;
   right: 0;
   z-index: 3;
   --rot: 13deg;
@@ -643,7 +644,7 @@ import heroNotebook3 from "../assets/images/notebooks/2.png";
 
 .hero__book--d {
   width: 170px;
-  height: 224px;
+  height: 234px;
   bottom: 14px;
   left: 152px;
   z-index: 5;
@@ -785,23 +786,20 @@ import heroNotebook3 from "../assets/images/notebooks/2.png";
   .hero__layout {
     grid-template-columns: 1fr;
     text-align: center;
-    gap: 32px;
     padding-bottom: 80px;
   }
 
   .hero__visual {
     height: 360px;
-    order: -1;
   }
   .hero__collage {
     width: 320px;
     height: 340px;
   }
   .hero__book--a {
-    width: 142px;
-    height: 152px;
-    top: 50px;
-    left: 0;
+    width: 150px;
+    height: 150px;
+    top: 42px;
   }
   .hero__book--b {
     width: 160px;
@@ -810,30 +808,29 @@ import heroNotebook3 from "../assets/images/notebooks/2.png";
     left: 85px;
   }
   .hero__book--c {
-    width: 142px;
-    height: 152px;
-    top: 50px;
-    right: 0;
+    width: 150px;
+    height: 150px;
+    top: 42px;
   }
   .hero__book--d {
     width: 116px;
     height: 154px;
-    bottom: 16px;
+    bottom: 8px;
     left: 104px;
   }
 
   .hero__book--e {
     width: 104px;
     height: 146px;
-    bottom: 12px;
-    left: 0px;
+    bottom: 4px;
+    left: 12px;
   }
 
   .hero__book--f {
     width: 104px;
     height: 146px;
-    bottom: 8px;
-    right: 0px;
+    bottom: 4px;
+    right: 12px;
   }
   .hero__ring {
     width: 340px;

@@ -97,29 +97,11 @@ function closeMenu() {
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(255, 244, 245, 0.95);
-  border-bottom: 1px solid rgba(249, 208, 206, 0.6);
+  background: rgb(255, 244, 245);
+  border-bottom: 1px solid var(--primrose);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.8) inset,
     0 6px 32px rgba(242, 151, 160, 0.14);
-}
-
-/* glowing primrose line along the bottom */
-.navbar::after {
-  content: "";
-  position: absolute;
-  bottom: -1px;
-  left: 5%;
-  right: 5%;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--primrose) 30%,
-    var(--pinktone) 70%,
-    transparent
-  );
-  opacity: 0.7;
 }
 
 .navbar__inner {

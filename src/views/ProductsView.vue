@@ -52,6 +52,8 @@ const allProducts = computed<Product[]>(() => {
 const route = useRoute();
 
 const selected = ref<ProductKind>("all");
+const q = ref("");
+const productsRef = ref<HTMLElement | null>(null);
 
 watchEffect(() => {
   const q = (route.query.kind ?? "all") as string;
@@ -74,24 +76,60 @@ function setFilter(kind: ProductKind) {
   const qs = params.toString();
   const nextUrl = qs ? `${base}?${qs}` : base;
   window.history.replaceState({}, "", nextUrl);
+
+  // scroll products section to top after filter change
+  nextTick(() =>
+    productsRef.value?.scrollIntoView({ behavior: "smooth", block: "start" }),
+  );
 }
 
+// Filter and sort products. Bestsellers (tag === 'bestseller') appear first.
 const filtered = computed(() => {
-  if (selected.value === "all") return allProducts.value;
-  return allProducts.value.filter((p) => p.kind === selected.value);
+  let base =
+    selected.value === "all"
+      ? allProducts.value.slice()
+      : allProducts.value.filter((p) => p.kind === selected.value);
+
+  const term = q.value.trim().toLowerCase();
+  if (term) {
+    base = base.filter((p) => {
+      return (
+        p.title.toLowerCase().includes(term) ||
+        p.desc.toLowerCase().includes(term) ||
+        (p.tag || "").toLowerCase().includes(term)
+      );
+    });
+  }
+
+  // sort so that items with tag 'bestseller' come first; keep original order otherwise
+  base.sort((a, b) => {
+    const aScore = a.tag === "bestseller" ? 1 : 0;
+    const bScore = b.tag === "bestseller" ? 1 : 0;
+    return bScore - aScore;
+  });
+
+  return base;
 });
 
 // After a filter change Vue may reposition cards into the viewport without
 // the IntersectionObserver detecting it (it only fires on state *changes*).
 // Unobserving then re-observing forces the IO to report current visibility.
 watch(filtered, () => nextTick(refresh));
+
+// When user types in the search box, scroll back to the top of the products
+watch(q, (newVal, oldVal) => {
+  if (newVal === oldVal) return;
+  nextTick(() =>
+    productsRef.value?.scrollIntoView({ behavior: "smooth", block: "start" }),
+  );
+});
 </script>
 
 <template>
   <main>
+    <FloatingDecor fixed :count="16" />
     <!-- ── Header ─────────────────────────────────── -->
     <section class="page-hero">
-      <FloatingDecor />
       <div class="container page-hero__content reveal">
         <p class="page-hero__eyebrow">my products on Amazon</p>
         <h1 class="page-hero__title">Products</h1>
@@ -102,7 +140,7 @@ watch(filtered, () => nextTick(refresh));
     </section>
 
     <!-- ── Grid ───────────────────────────────────── -->
-    <section class="section products">
+    <section class="section products" ref="productsRef">
       <div class="container">
         <div class="products__top reveal">
           <span class="products__count">{{ filtered.length }} items</span>
@@ -140,16 +178,85 @@ watch(filtered, () => nextTick(refresh));
             </button>
           </div>
 
-          <a
-            class="btn btn-primary"
-            href="https://www.amazon.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            🛒 Shop on Amazon
-          </a>
+          <!-- Search -->
+          <div class="search">
+            <span class="search__icon search__icon--left" aria-hidden="true">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M21 21l-4.35-4.35"
+                  stroke="#c85473"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="6"
+                  stroke="#c85473"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+
+            <input
+              id="product-search"
+              v-model="q"
+              class="search__input"
+              type="text"
+              :maxlength="35"
+              placeholder="Search products"
+              aria-label="Search products"
+            />
+
+            <button
+              v-if="q"
+              type="button"
+              class="search__clear"
+              @click="q = ''"
+              aria-label="Clear search"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M18 6L6 18M6 6l12 12"
+                  stroke="#7a4450"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
 
+        <!-- No products found -->
+        <div v-if="filtered.length === 0" class="empty-state">
+          <p class="empty-state__title">No products found</p>
+          <p class="empty-state__body">
+            <span v-if="q">No results for "{{ q }}".</span>
+            <span v-else>We couldn't find any products.</span>
+            Try different keywords or clear the search.
+          </p>
+          <button v-if="q" class="btn" @click="q = ''">Clear search</button>
+        </div>
+
+        <!-- Product cards -->
         <div class="card-grid">
           <component
             v-for="(p, i) in filtered"
@@ -168,9 +275,8 @@ watch(filtered, () => nextTick(refresh));
 <style scoped>
 .page-hero {
   padding: 120px 0 70px;
-  position: relative;
   overflow: hidden;
-  background: var(--pink-bg);
+  background: var(--primrose-light);
 }
 
 .page-hero__content {
@@ -240,14 +346,19 @@ watch(filtered, () => nextTick(refresh));
 }
 
 .products__top {
+  position: sticky;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
   flex-wrap: wrap;
-  margin-bottom: 24px;
-  padding-bottom: 8px;
+  margin-bottom: 0;
+  padding: 10px;
+  margin-bottom: 12px;
   border-bottom: 1px solid var(--primrose-light);
+  top: 71px;
+  z-index: 40;
+  background: var(--pink-bg);
 }
 
 .products__top .filters {
@@ -272,6 +383,99 @@ watch(filtered, () => nextTick(refresh));
   font-weight: 700;
   font-size: 0.9rem;
   min-width: 80px;
+}
+
+.search {
+  position: relative;
+  max-width: 520px;
+}
+
+.search__icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  color: var(--mid);
+  pointer-events: none;
+}
+
+.search__icon svg {
+  display: block;
+}
+
+.search__input {
+  padding: 10px 14px;
+  padding-left: 44px;
+  padding-right: 44px;
+  border-radius: 999px;
+  border: 1.5px solid #f3d6db;
+  background: #fff;
+  min-width: 240px;
+  font-size: 0.95rem;
+  outline: none;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.02);
+  transition:
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.search__input::placeholder {
+  color: #d18c9b;
+}
+
+.search__input:focus {
+  box-shadow: 0 0 0 6px rgba(242, 151, 160, 0.12);
+  border-color: #f297a0;
+}
+
+.search__clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.04);
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.search__clear svg {
+  display: block;
+}
+
+.empty-state {
+  background: rgba(255, 245, 247, 0.9);
+  border: 1px solid #f4d9dd;
+  padding: 28px 20px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 18px;
+}
+.empty-state__title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #c13b64;
+  margin: 0 0 6px;
+}
+.empty-state__body {
+  color: var(--mid);
+  margin: 0 0 12px;
+}
+.empty-state .btn {
+  background: linear-gradient(90deg, #ffb2c4, #f79aa9);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
 }
 
 @media (max-width: 520px) {

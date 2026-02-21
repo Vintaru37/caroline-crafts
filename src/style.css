@@ -307,6 +307,7 @@ img {
   background: var(--dark);
   color: var(--white);
   font-size: 0.72rem;
+  text-transform: capitalize;
   font-weight: 700;
   padding: 3px 10px;
   border-radius: 999px;

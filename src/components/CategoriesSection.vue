@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
 
-import cbImg1 from "../assets/images/coloring-books/cozy-awawa.webp";
-import cbImg2 from "../assets/images/coloring-books/little-reminders.webp";
-import cbImg3 from "../assets/images/coloring-books/cozy-capybaras.webp";
-import nbImg1 from "../assets/images/notebooks/1.png";
-import nbImg2 from "../assets/images/notebooks/2.png";
-import nbImg3 from "../assets/images/notebooks/3.png";
+import cbImg1 from "../assets/images/coloring-books/no-thoughts-only-awawa.webp";
+import cbImg2 from "../assets/images/coloring-books/huggy-friends.webp";
+import cbImg3 from "../assets/images/coloring-books/little-reminders.webp";
+import nbImg1 from "../assets/images/notebooks/cute-axolotl.webp";
+import nbImg2 from "../assets/images/notebooks/cute-kawaii-rock-hyrax.webp";
+import nbImg3 from "../assets/images/notebooks/happy-like-quokka.webp";
 
 const features = [
   {
@@ -311,7 +311,7 @@ const features = [
 }
 
 .fan-book--0 {
-  transform: translateX(calc(-50% - 38px)) rotate(-18deg);
+  transform: translate(calc(-50% - 22px), 12px) rotate(-18deg);
   z-index: 1;
 }
 .fan-book--1 {
@@ -319,18 +319,18 @@ const features = [
   z-index: 3;
 }
 .fan-book--2 {
-  transform: translateX(calc(-50% + 38px)) rotate(18deg);
+  transform: translate(calc(-50% + 22px), 12px) rotate(18deg);
   z-index: 2;
 }
 
 .feature-card:hover .fan-book--0 {
-  transform: translateX(calc(-50% - 54px)) rotate(-26deg);
+  transform: translate(calc(-50% - 54px), 12px) rotate(-26deg);
 }
 .feature-card:hover .fan-book--1 {
   transform: translateX(-50%) rotate(0deg) scale(1.07) translateY(-6px);
 }
 .feature-card:hover .fan-book--2 {
-  transform: translateX(calc(-50% + 54px)) rotate(26deg);
+  transform: translate(calc(-50% + 54px), 12px) rotate(26deg);
 }
 
 /* ── Coloring books: square-ish fan images ───────────────────────── */
@@ -355,13 +355,13 @@ const features = [
   z-index: 2;
 }
 .feature-card.is-coloring:hover .fan-book--0 {
-  transform: translateX(calc(-50% - 54px)) rotate(-22deg);
+  transform: translateX(calc(-50% - 72px)) rotate(-22deg);
 }
 .feature-card.is-coloring:hover .fan-book--1 {
   transform: translateX(-50%) rotate(0deg) scale(1.08) translateY(-6px);
 }
 .feature-card.is-coloring:hover .fan-book--2 {
-  transform: translateX(calc(-50% + 54px)) rotate(22deg);
+  transform: translateX(calc(-50% + 72px)) rotate(22deg);
 }
 
 /* ── Text ────────────────────────────────────────── */

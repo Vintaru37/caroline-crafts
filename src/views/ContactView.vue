@@ -72,9 +72,9 @@ async function handleSubmit() {
 
 <template>
   <main>
+    <FloatingDecor :count="16" />
     <!-- ── Page hero ──────────────────────────────── -->
     <section class="page-hero">
-      <FloatingDecor />
       <div class="container page-hero__inner">
         <span class="page-hero__eyebrow">say hello 🌸</span>
         <h1 class="page-hero__title">Get in Touch</h1>
@@ -209,9 +209,8 @@ async function handleSubmit() {
 <style scoped>
 /* ── Page hero ───────────────────────────────────── */
 .page-hero {
-  position: relative;
   overflow: hidden;
-  background: var(--pink-bg);
+  background: var(--primrose-light);
   padding: 110px 0 80px;
   text-align: center;
 }
