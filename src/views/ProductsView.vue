@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect } from "vue";
+import { computed, nextTick, ref, watch, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import FloatingDecor from "../components/FloatingDecor.vue";
 import ColoringBookCard from "../components/ColoringBookCard.vue";
@@ -8,7 +8,7 @@ import { useReveal } from "../composables/useReveal";
 import { coloringBooks } from "../data/coloringBooks";
 import { notebooks } from "../data/notebooks";
 
-useReveal();
+const { refresh } = useReveal();
 
 type ProductKind = "all" | "coloring-books" | "notebooks";
 
@@ -80,6 +80,11 @@ const filtered = computed(() => {
   if (selected.value === "all") return allProducts.value;
   return allProducts.value.filter((p) => p.kind === selected.value);
 });
+
+// After a filter change Vue may reposition cards into the viewport without
+// the IntersectionObserver detecting it (it only fires on state *changes*).
+// Unobserving then re-observing forces the IO to report current visibility.
+watch(filtered, () => nextTick(refresh));
 </script>
 
 <template>
@@ -205,7 +210,7 @@ const filtered = computed(() => {
 .filter-pill {
   border: 1px solid var(--pinktone);
   background: rgba(255, 255, 255, 0.75);
-  padding: 8px 16px;
+  padding: 8px 24px;
   border-radius: 999px;
   font-family: var(--font-body);
   font-weight: 700;
@@ -240,8 +245,8 @@ const filtered = computed(() => {
   justify-content: space-between;
   gap: 14px;
   flex-wrap: wrap;
-  margin-bottom: 26px;
-  padding-bottom: 18px;
+  margin-bottom: 24px;
+  padding-bottom: 8px;
   border-bottom: 1px solid var(--primrose-light);
 }
 

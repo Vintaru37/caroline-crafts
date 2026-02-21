@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import emailjs from "@emailjs/browser";
 import FloatingDecor from "../components/FloatingDecor.vue";
 import { useReveal } from "../composables/useReveal";
 import instagramIcon from "../assets/images/instagram-icon.png";
@@ -39,14 +40,33 @@ function toggle(i: number) {
 const form = ref({ name: "", email: "", message: "" });
 const sent = ref(false);
 const sending = ref(false);
+const sendError = ref("");
 
-function handleSubmit() {
+async function handleSubmit() {
   sending.value = true;
-  setTimeout(() => {
-    sending.value = false;
+  sendError.value = "";
+
+  try {
+    await emailjs.send(
+      import.meta.env.VITE_EMAILJS_SERVICE_ID,
+      import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+      {
+        from_name: form.value.name,
+        sender_email: form.value.email,
+        message: form.value.message,
+        to_email: "carolinecraftsshop@gmail.com",
+      },
+      { publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY },
+    );
     sent.value = true;
     form.value = { name: "", email: "", message: "" };
-  }, 900);
+  } catch (err) {
+    console.error("EmailJS error:", err);
+    sendError.value =
+      "Oops! Something went wrong. Please try again or email me directly at carolinecraftsshop@gmail.com";
+  } finally {
+    sending.value = false;
+  }
 }
 </script>
 
@@ -111,6 +131,10 @@ function handleSubmit() {
               <div v-if="sent" class="success-msg">
                 🎉 Message sent! I'll get back to you soon.
               </div>
+            </Transition>
+
+            <Transition name="fade">
+              <div v-if="sendError" class="error-msg">{{ sendError }}</div>
             </Transition>
 
             <form v-if="!sent" class="c-form" @submit.prevent="handleSubmit">
@@ -354,6 +378,17 @@ function handleSubmit() {
   padding: 14px 18px;
   font-weight: 700;
   font-size: 0.95rem;
+  margin-bottom: 16px;
+}
+
+.error-msg {
+  background: #fde8e8;
+  color: #b91c1c;
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
 }
 
 .c-form {

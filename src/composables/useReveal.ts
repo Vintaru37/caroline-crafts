@@ -12,6 +12,16 @@ export function useReveal() {
     node.querySelectorAll?.(".reveal").forEach((el) => observer?.observe(el));
   };
 
+  // Call after a filter/list change so cards that moved into the viewport
+  // (due to siblings being removed) get re-evaluated by the IO.
+  const refresh = () => {
+    if (!observer) return;
+    document.querySelectorAll(".reveal:not(.is-visible)").forEach((el) => {
+      observer!.unobserve(el);
+      observer!.observe(el);
+    });
+  };
+
   onMounted(() => {
     observer = new IntersectionObserver(
       (entries) => {
@@ -43,4 +53,6 @@ export function useReveal() {
     observer?.disconnect();
     mutationObserver?.disconnect();
   });
+
+  return { refresh };
 }
