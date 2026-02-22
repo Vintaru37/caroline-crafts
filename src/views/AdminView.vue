@@ -35,7 +35,7 @@ async function logout() {
   await supabase.auth.signOut();
 }
 
-// Products 
+// Products
 const {
   isLoading,
   loadError,
@@ -77,9 +77,8 @@ const filteredProducts = computed(() => {
   return list;
 });
 
-const isDraggable = computed(
-  () => catFilter.value === "all" && searchQ.value.trim() === "",
-);
+// Drag is available on any category tab as long as no text search is active
+const isDraggable = computed(() => searchQ.value.trim() === "");
 
 // Add / Edit Modal
 const showModal = ref(false);
@@ -116,10 +115,10 @@ async function handleSave(formData: Omit<AdminProduct, "id">) {
   try {
     if (modalMode.value === "add") {
       await addProduct(formData);
-      showToast("Product added! đźŽ‰");
+      showToast("Product added!");
     } else if (editingId.value) {
       await updateProduct(editingId.value, formData);
-      showToast("Product updated! âś…");
+      showToast("Product updated!");
     }
     showModal.value = false;
   } catch (err: unknown) {
@@ -130,7 +129,7 @@ async function handleSave(formData: Omit<AdminProduct, "id">) {
   }
 }
 
-// Delete 
+// Delete
 const deleteTarget = ref<AdminProduct | null>(null);
 
 async function confirmDelete() {
@@ -138,7 +137,7 @@ async function confirmDelete() {
   try {
     await deleteProduct(deleteTarget.value.id);
     deleteTarget.value = null;
-    showToast("Product deleted. đź—‘ď¸Ź");
+    showToast("Product deleted.");
   } catch (err: unknown) {
     showToast(
       "Delete failed: " +
@@ -155,7 +154,7 @@ async function handleReorder(ids: string[]) {
   isSavingOrder.value = true;
   try {
     await reorderProducts(ids);
-    showToast("Order saved! âś¨");
+    showToast("Order saved!");
   } catch (err: unknown) {
     showToast(
       "Failed to save order: " +
@@ -171,7 +170,7 @@ async function handleReorder(ids: string[]) {
 async function handleImportFile(file: File) {
   try {
     await importProducts(file);
-    showToast("Products imported successfully! đź“¦");
+    showToast("Products imported successfully!");
   } catch (err: unknown) {
     showToast(
       "Import failed: " +
@@ -224,7 +223,6 @@ onUnmounted(() => {
     />
 
     <AdminProductTable
-      :allProducts="allProducts"
       :filteredProducts="filteredProducts"
       :isDraggable="isDraggable"
       :isLoading="isLoading"

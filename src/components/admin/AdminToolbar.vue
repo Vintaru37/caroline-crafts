@@ -99,7 +99,10 @@ function handleFileChange(e: Event) {
         Showing <strong>{{ filteredCount }}</strong> product{{
           filteredCount !== 1 ? "s" : ""
         }}
-        <span v-if="isDraggable" class="drag-hint">· Drag rows to reorder</span>
+        <span v-if="isDraggable" class="drag-hint">· Drag to reorder</span>
+        <span v-else class="drag-hint drag-hint--off"
+          >· Clear search to enable reordering</span
+        >
       </span>
       <div class="secondary-actions">
         <button
@@ -271,6 +274,11 @@ function handleFileChange(e: Event) {
 .drag-hint {
   color: var(--primrose-deep);
   font-style: italic;
+}
+
+.drag-hint--off {
+  color: var(--mid);
+  opacity: 0.7;
 }
 
 .secondary-actions {

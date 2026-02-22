@@ -204,13 +204,17 @@ export function useProducts() {
   // Persists a new display order for the given product IDs to Supabase.
 
   async function reorderProducts(orderedIds: string[]): Promise<void> {
-    const updates = orderedIds.map((id, idx) => ({ id, sort_order: idx }));
+    const map = new Map(state.products.map((p) => [p.id, p]));
+    // Include full product objects so Supabase not-null constraints are satisfied
+    const updates = orderedIds.map((id, idx) => {
+      const p = map.get(id)!;
+      return { ...p, sort_order: idx };
+    });
     const { error } = await supabase
       .from("products")
       .upsert(updates, { onConflict: "id" });
     if (error) throw new Error(error.message);
     // Reorder local state to match
-    const map = new Map(state.products.map((p) => [p.id, p]));
     const reordered = orderedIds
       .map((id, idx) => {
         const p = map.get(id);

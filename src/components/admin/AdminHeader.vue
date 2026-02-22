@@ -35,9 +35,10 @@ defineEmits<{ logout: [] }>();
 
 <style scoped>
 .admin-header {
-  background: #1a0d10;
+  background-color: var(--dark);
   padding: 12px 28px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 20px;
   flex-wrap: wrap;
@@ -51,7 +52,6 @@ defineEmits<{ logout: [] }>();
   display: flex;
   align-items: center;
   gap: 12px;
-  flex: 1;
 }
 
 .admin-header__logo-img {

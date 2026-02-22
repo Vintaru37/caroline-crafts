@@ -246,8 +246,9 @@ function handleSubmit() {
   background: #fff;
   border-radius: 20px;
   width: 100%;
-  max-width: 560px;
+  max-width: 660px;
   max-height: 90vh;
+  padding-inline: .75rem;
   display: flex;
   flex-direction: column;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
