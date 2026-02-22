@@ -8,7 +8,7 @@ import { useReveal } from "../composables/useReveal";
 import { useProducts } from "../composables/useProducts";
 
 const { refresh } = useReveal();
-const { coloringBookList, notebookList } = useProducts();
+const { coloringBookList, notebookList, isLoading } = useProducts();
 
 type ProductKind = "all" | "coloring-books" | "notebooks";
 
@@ -145,131 +145,139 @@ watch(q, (newVal, oldVal) => {
     <!-- ── Grid ───────────────────────────────────── -->
     <section class="section products" ref="productsRef">
       <div class="container">
-        <div class="products__top reveal">
-          <span class="products__count">{{ filtered.length }} items</span>
+        <!-- Loading state while Supabase fetches products -->
+        <div v-if="isLoading" class="products-loading">
+          <span class="products-loading__spinner"></span>
+          <p>Loading products…</p>
+        </div>
 
-          <div class="filters" role="tablist" aria-label="Product filters">
-            <button
-              class="filter-pill"
-              :class="{ active: selected === 'all' }"
-              type="button"
-              role="tab"
-              :aria-selected="selected === 'all'"
-              @click="setFilter('all')"
-            >
-              All
-            </button>
-            <button
-              class="filter-pill"
-              :class="{ active: selected === 'coloring-books' }"
-              type="button"
-              role="tab"
-              :aria-selected="selected === 'coloring-books'"
-              @click="setFilter('coloring-books')"
-            >
-              Coloring Books
-            </button>
-            <button
-              class="filter-pill"
-              :class="{ active: selected === 'notebooks' }"
-              type="button"
-              role="tab"
-              :aria-selected="selected === 'notebooks'"
-              @click="setFilter('notebooks')"
-            >
-              Notebooks
-            </button>
+        <template v-else>
+          <div class="products__top reveal">
+            <span class="products__count">{{ filtered.length }} items</span>
+
+            <div class="filters" role="tablist" aria-label="Product filters">
+              <button
+                class="filter-pill"
+                :class="{ active: selected === 'all' }"
+                type="button"
+                role="tab"
+                :aria-selected="selected === 'all'"
+                @click="setFilter('all')"
+              >
+                All
+              </button>
+              <button
+                class="filter-pill"
+                :class="{ active: selected === 'coloring-books' }"
+                type="button"
+                role="tab"
+                :aria-selected="selected === 'coloring-books'"
+                @click="setFilter('coloring-books')"
+              >
+                Coloring Books
+              </button>
+              <button
+                class="filter-pill"
+                :class="{ active: selected === 'notebooks' }"
+                type="button"
+                role="tab"
+                :aria-selected="selected === 'notebooks'"
+                @click="setFilter('notebooks')"
+              >
+                Notebooks
+              </button>
+            </div>
+
+            <!-- Search -->
+            <div class="search">
+              <span class="search__icon search__icon--left" aria-hidden="true">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M21 21l-4.35-4.35"
+                    stroke="#c85473"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <circle
+                    cx="11"
+                    cy="11"
+                    r="6"
+                    stroke="#c85473"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+
+              <input
+                id="product-search"
+                v-model="q"
+                class="search__input"
+                type="text"
+                :maxlength="35"
+                placeholder="Search products"
+                aria-label="Search products"
+              />
+
+              <button
+                v-if="q"
+                type="button"
+                class="search__clear"
+                @click="q = ''"
+                aria-label="Clear search"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M18 6L6 18M6 6l12 12"
+                    stroke="#7a4450"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
 
-          <!-- Search -->
-          <div class="search">
-            <span class="search__icon search__icon--left" aria-hidden="true">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <path
-                  d="M21 21l-4.35-4.35"
-                  stroke="#c85473"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <circle
-                  cx="11"
-                  cy="11"
-                  r="6"
-                  stroke="#c85473"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </span>
+          <!-- No products found -->
+          <div v-if="filtered.length === 0" class="empty-state">
+            <p class="empty-state__title">No products found</p>
+            <p class="empty-state__body">
+              <span v-if="q">No results for "{{ q }}".</span>
+              <span v-else>We couldn't find any products.</span>
+              Try different keywords or clear the search.
+            </p>
+            <button v-if="q" class="btn" @click="q = ''">Clear search</button>
+          </div>
 
-            <input
-              id="product-search"
-              v-model="q"
-              class="search__input"
-              type="text"
-              :maxlength="35"
-              placeholder="Search products"
-              aria-label="Search products"
+          <!-- Product cards -->
+          <div class="card-grid">
+            <component
+              v-for="(p, i) in filtered"
+              :is="CardComponentByKind[p.kind]"
+              :key="p.id"
+              :product="p"
+              class="reveal"
+              :class="`reveal-delay-${(i % 5) + 1}`"
             />
-
-            <button
-              v-if="q"
-              type="button"
-              class="search__clear"
-              @click="q = ''"
-              aria-label="Clear search"
-            >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <path
-                  d="M18 6L6 18M6 6l12 12"
-                  stroke="#7a4450"
-                  stroke-width="2.2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </button>
           </div>
-        </div>
-
-        <!-- No products found -->
-        <div v-if="filtered.length === 0" class="empty-state">
-          <p class="empty-state__title">No products found</p>
-          <p class="empty-state__body">
-            <span v-if="q">No results for "{{ q }}".</span>
-            <span v-else>We couldn't find any products.</span>
-            Try different keywords or clear the search.
-          </p>
-          <button v-if="q" class="btn" @click="q = ''">Clear search</button>
-        </div>
-
-        <!-- Product cards -->
-        <div class="card-grid">
-          <component
-            v-for="(p, i) in filtered"
-            :is="CardComponentByKind[p.kind]"
-            :key="p.id"
-            :product="p"
-            class="reveal"
-            :class="`reveal-delay-${(i % 5) + 1}`"
-          />
-        </div>
+        </template>
       </div>
     </section>
   </main>
@@ -485,6 +493,34 @@ watch(q, (newVal, oldVal) => {
   .products__top {
     justify-content: center;
     text-align: center;
+  }
+}
+
+.products-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 80px 0;
+  color: var(--mid);
+  font-family: var(--font-body);
+  font-size: 1rem;
+}
+
+.products-loading__spinner {
+  display: block;
+  width: 44px;
+  height: 44px;
+  border: 4px solid rgba(242, 151, 160, 0.25);
+  border-top-color: var(--primrose);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>

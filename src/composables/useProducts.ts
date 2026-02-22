@@ -1,14 +1,13 @@
 /**
- * useProducts – singleton composable for all product data management.
+ * useProducts – singleton composable backed by Supabase.
  *
- * Products are loaded from src/data/products.json at build time.
- * Changes made in the Admin Panel are kept in-memory for the current session.
- * Use the Export button to download the updated JSON, then replace
- * src/data/products.json with it and rebuild to make changes permanent.
- *
+ * Reads from / writes to the `products` table in your Supabase project.
+ * Images are stored as bare filenames in the DB (e.g. "cozy-awawa.webp") and
+ * resolved to real asset URLs at runtime via Vite glob imports.
  */
 
 import { reactive, computed } from "vue";
+import { supabase } from "../lib/supabase";
 import productsData from "../data/products.json";
 
 // ── Image resolution via Vite glob ───────────────────────────────────────────
@@ -40,6 +39,8 @@ export interface AdminProduct {
   amazonUrl: string;
   /** Used by Notebooks – e.g. "Lined", "Grid", "Bullet Journal" */
   notebookType: string;
+  /** Display order — lower = first */
+  sort_order?: number;
 }
 
 export function resolveImage(category: ProductCategory, image: string): string {
@@ -58,16 +59,58 @@ export function resolveImage(category: ProductCategory, image: string): string {
 }
 
 // ── Module-level singleton state ─────────────────────────────────────────────
-// Seeded from products.json at startup. Changes are in-memory only.
-// Export from the Admin Panel to get an updated JSON you can commit.
 
 const state = reactive({
-  products: (productsData as AdminProduct[]).slice(),
+  products: [] as AdminProduct[],
+  loading: true,
+  error: null as string | null,
 });
+
+// Fetch immediately when the module is first imported
+_fetchAll();
+
+async function _fetchAll(): Promise<void> {
+  state.loading = true;
+  state.error = null;
+
+  // Try Supabase first. If the query fails for any reason (network down,
+  // missing column, RLS issue) fall back silently to the bundled JSON so
+  // the site always shows products.
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .order("sort_order", { ascending: true, nullsFirst: false })
+    .order("id");
+
+  if (error) {
+    console.warn(
+      "[useProducts] Supabase unavailable, using local fallback:",
+      error.message,
+    );
+    // Use bundled JSON as fallback — products always visible to visitors
+    state.products.splice(
+      0,
+      state.products.length,
+      ...(productsData as AdminProduct[]),
+    );
+    // Only show the error banner inside the admin panel, not to visitors
+    state.error = error.message;
+  } else {
+    state.products.splice(
+      0,
+      state.products.length,
+      ...(data as AdminProduct[]),
+    );
+  }
+  state.loading = false;
+}
 
 // ── Composable ───────────────────────────────────────────────────────────────
 
 export function useProducts() {
+  const isLoading = computed(() => state.loading);
+  const loadError = computed(() => state.error);
+
   // Raw list (bare image filenames) – used internally and for export
   const allProducts = computed(() => state.products as AdminProduct[]);
 
@@ -84,33 +127,40 @@ export function useProducts() {
       .map((p) => ({ ...p, image: resolveImage(p.category, p.image) })),
   );
 
-  // ── CRUD (in-memory only) ─────────────────────────────────────────
+  // ── CRUD (Supabase-backed) ────────────────────────────────────────
 
-  function addProduct(data: Omit<AdminProduct, "id">): void {
+  async function addProduct(data: Omit<AdminProduct, "id">): Promise<void> {
     const id = `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-    state.products.push({ ...data, id });
+    const product: AdminProduct = { ...data, id };
+    const { error } = await supabase.from("products").insert([product]);
+    if (error) throw new Error(error.message);
+    state.products.push(product);
   }
 
-  function updateProduct(
+  async function updateProduct(
     id: string,
     changes: Partial<Omit<AdminProduct, "id">>,
-  ): void {
+  ): Promise<void> {
+    const { error } = await supabase
+      .from("products")
+      .update(changes)
+      .eq("id", id);
+    if (error) throw new Error(error.message);
     const idx = state.products.findIndex((p) => p.id === id);
     if (idx === -1) return;
     const current = state.products[idx];
     if (!current) return;
-    const updated: AdminProduct = { ...current, ...changes, id: current.id };
-    state.products.splice(idx, 1, updated);
+    state.products.splice(idx, 1, { ...current, ...changes, id: current.id });
   }
 
-  function deleteProduct(id: string): void {
+  async function deleteProduct(id: string): Promise<void> {
+    const { error } = await supabase.from("products").delete().eq("id", id);
+    if (error) throw new Error(error.message);
     const idx = state.products.findIndex((p) => p.id === id);
     if (idx !== -1) state.products.splice(idx, 1);
   }
 
   // ── Export / Import ───────────────────────────────────────────────
-  // Export writes raw state (bare filenames) → drop into src/data/products.json
-  // and rebuild to make changes permanent for all visitors.
 
   function exportProducts(): void {
     const json = JSON.stringify(state.products, null, 2);
@@ -128,11 +178,15 @@ export function useProducts() {
   function importProducts(file: File): Promise<void> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         try {
           const data = JSON.parse(e.target!.result as string) as AdminProduct[];
           if (!Array.isArray(data))
             throw new Error("File must contain an array of products.");
+          const { error } = await supabase
+            .from("products")
+            .upsert(data, { onConflict: "id" });
+          if (error) throw new Error(error.message);
           state.products.splice(0, state.products.length, ...data);
           resolve();
         } catch (err: unknown) {
@@ -146,18 +200,35 @@ export function useProducts() {
     });
   }
 
-  // ── Reset ─────────────────────────────────────────────────────────
-  // Discards all in-memory changes and reloads from products.json
+  // ── Reorder ───────────────────────────────────────────────────────
+  // Persists a new display order for the given product IDs to Supabase.
 
-  function resetToDefaults(): void {
-    state.products.splice(
-      0,
-      state.products.length,
-      ...(productsData as AdminProduct[]),
-    );
+  async function reorderProducts(orderedIds: string[]): Promise<void> {
+    const updates = orderedIds.map((id, idx) => ({ id, sort_order: idx }));
+    const { error } = await supabase
+      .from("products")
+      .upsert(updates, { onConflict: "id" });
+    if (error) throw new Error(error.message);
+    // Reorder local state to match
+    const map = new Map(state.products.map((p) => [p.id, p]));
+    const reordered = orderedIds
+      .map((id, idx) => {
+        const p = map.get(id);
+        return p ? { ...p, sort_order: idx } : null;
+      })
+      .filter(Boolean) as AdminProduct[];
+    state.products.splice(0, state.products.length, ...reordered);
+  }
+
+  // ── Reload ────────────────────────────────────────────────────────
+
+  function reload(): Promise<void> {
+    return _fetchAll();
   }
 
   return {
+    isLoading,
+    loadError,
     allProducts,
     coloringBookList,
     notebookList,
@@ -166,6 +237,7 @@ export function useProducts() {
     deleteProduct,
     exportProducts,
     importProducts,
-    resetToDefaults,
+    reorderProducts,
+    reload,
   };
 }
