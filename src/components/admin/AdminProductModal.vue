@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { reactive, watch, computed } from "vue";
+import { reactive, watch, computed, ref } from "vue";
 import { resolveImage } from "../../composables/useProducts";
+import { uploadProductImage } from "../../composables/useImageUpload";
 import type {
   AdminProduct,
   ProductCategory,
@@ -45,6 +46,21 @@ function blankForm(): FormData {
 
 const form = reactive<FormData>(blankForm());
 
+// ── Image upload state ────────────────────────────────────────────────────────
+const fileInputRef = ref<HTMLInputElement | null>(null);
+const pendingFile = ref<File | null>(null);
+const localPreviewUrl = ref<string>("");
+const isDragging = ref(false);
+const isUploading = ref(false);
+const uploadPhaseLabel = ref("");
+const uploadError = ref("");
+
+// Keep object URL in sync with pendingFile (create / revoke)
+watch(pendingFile, (newFile) => {
+  if (localPreviewUrl.value) URL.revokeObjectURL(localPreviewUrl.value);
+  localPreviewUrl.value = newFile ? URL.createObjectURL(newFile) : "";
+});
+
 watch(
   () => props.show,
   (newShow) => {
@@ -57,6 +73,16 @@ watch(
       form.image = src.image;
       form.amazonUrl = src.amazonUrl;
       form.notebookType = src.notebookType ?? "";
+      // Reset upload state
+      pendingFile.value = null;
+      uploadError.value = "";
+      isUploading.value = false;
+    } else {
+      // Revoke stale object URL when modal closes
+      if (localPreviewUrl.value) {
+        URL.revokeObjectURL(localPreviewUrl.value);
+        localPreviewUrl.value = "";
+      }
     }
   },
 );
@@ -65,7 +91,8 @@ function toggleTag(t: string) {
   form.tag = form.tag === t ? "" : t;
 }
 
-const imagePreview = computed(() => {
+// Preview for the text-field image (filename or https://… URL)
+const resolvedPreview = computed(() => {
   if (!form.image) return "";
   try {
     return resolveImage(form.category, form.image);
@@ -74,7 +101,60 @@ const imagePreview = computed(() => {
   }
 });
 
-function handleSubmit() {
+// ── File input handlers ───────────────────────────────────────────────────────
+function triggerFileInput() {
+  fileInputRef.value?.click();
+}
+
+function onFileChange(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0] ?? null;
+  if (file) {
+    pendingFile.value = file;
+    uploadError.value = "";
+  }
+}
+
+function onDrop(e: DragEvent) {
+  isDragging.value = false;
+  const file = e.dataTransfer?.files?.[0] ?? null;
+  if (file && file.type.startsWith("image/")) {
+    pendingFile.value = file;
+    uploadError.value = "";
+  }
+}
+
+function clearPendingFile() {
+  pendingFile.value = null;
+  if (fileInputRef.value) fileInputRef.value.value = "";
+}
+
+// ── Submit (upload first, then save) ─────────────────────────────────────────
+async function handleSubmit() {
+  uploadError.value = "";
+
+  if (pendingFile.value) {
+    isUploading.value = true;
+    uploadPhaseLabel.value = "Processing image…";
+    try {
+      const url = await uploadProductImage(
+        pendingFile.value,
+        form.category,
+        (phase) => {
+          uploadPhaseLabel.value =
+            phase === "processing" ? "Processing image…" : "Uploading…";
+        },
+      );
+      form.image = url;
+      clearPendingFile();
+    } catch (err) {
+      uploadError.value =
+        err instanceof Error ? err.message : "Image upload failed.";
+      isUploading.value = false;
+      return; // Don't emit save on upload failure
+    }
+    isUploading.value = false;
+  }
+
   emit("save", { ...form });
 }
 </script>
@@ -101,19 +181,23 @@ function handleSubmit() {
           <!-- Category -->
           <div class="form-group">
             <label class="form-label">Category</label>
-            <div class="radio-row">
-              <label class="radio-label">
-                <input
-                  type="radio"
-                  v-model="form.category"
-                  value="coloring-book"
-                />
+            <div class="cat-toggle">
+              <button
+                type="button"
+                class="cat-btn"
+                :class="{ active: form.category === 'coloring-book' }"
+                @click="form.category = 'coloring-book'"
+              >
                 🎨 Coloring Book
-              </label>
-              <label class="radio-label">
-                <input type="radio" v-model="form.category" value="notebook" />
+              </button>
+              <button
+                type="button"
+                class="cat-btn"
+                :class="{ active: form.category === 'notebook' }"
+                @click="form.category = 'notebook'"
+              >
                 📓 Notebook
-              </label>
+              </button>
             </div>
           </div>
 
@@ -123,6 +207,7 @@ function handleSubmit() {
             <input
               id="f-title"
               v-model="form.title"
+              spellcheck="false"
               class="form-input"
               type="text"
               placeholder="Product title"
@@ -135,25 +220,90 @@ function handleSubmit() {
             <textarea
               id="f-desc"
               v-model="form.desc"
+              spellcheck="false"
               class="form-textarea"
               rows="3"
               placeholder="Short description…"
             ></textarea>
           </div>
 
-          <!-- Image filename -->
+          <!-- Image -->
           <div class="form-group">
-            <label class="form-label" for="f-image">Image filename</label>
-            <input
-              id="f-image"
-              v-model="form.image"
-              class="form-input"
-              type="text"
-              placeholder="e.g. cozy-awawa.webp or https://…"
-            />
-            <div v-if="imagePreview" class="img-preview-wrap">
-              <img :src="imagePreview" alt="Preview" class="img-preview" />
+            <label class="form-label">Image</label>
+
+            <!-- Drop zone / file picker -->
+            <div
+              class="drop-zone"
+              :class="{
+                'has-file': !!pendingFile,
+                'drag-over': isDragging,
+                'is-notebook': form.category === 'notebook',
+              }"
+              @dragover.prevent="isDragging = true"
+              @dragleave.prevent="isDragging = false"
+              @drop.prevent="onDrop"
+              @click="triggerFileInput"
+            >
+              <input
+                ref="fileInputRef"
+                type="file"
+                accept="image/*"
+                class="file-input-hidden"
+                @change="onFileChange"
+                @click.stop
+              />
+              <template v-if="pendingFile">
+                <img
+                  :src="localPreviewUrl"
+                  class="drop-zone-thumb"
+                  alt="Selected image"
+                />
+                <div class="drop-zone-info">
+                  <span class="drop-zone-filename">{{ pendingFile.name }}</span>
+                  <span class="drop-zone-hint"
+                    >Will be resized &amp; converted to WebP on save</span
+                  >
+                </div>
+                <button
+                  class="drop-zone-clear"
+                  type="button"
+                  @click.stop="clearPendingFile"
+                  aria-label="Remove selected image"
+                >
+                  ✕
+                </button>
+              </template>
+              <template v-else>
+                <span class="drop-zone-icon">📷</span>
+                <div class="drop-zone-info">
+                  <span class="drop-zone-text"
+                    >Drop image here or <u>browse</u></span
+                  >
+                  <span class="drop-zone-hint"
+                    >PNG · JPG · WEBP · GIF · any format</span
+                  >
+                </div>
+              </template>
             </div>
+
+            <!-- Current image (edit mode, no new file pending) -->
+            <div
+              v-if="!pendingFile && resolvedPreview"
+              :class="[
+                'current-image-wrap',
+                { 'is-notebook': form.category === 'notebook' },
+              ]"
+            >
+              <span class="current-image-label">Current image</span>
+              <img
+                :src="resolvedPreview"
+                alt="Current image"
+                class="current-image-thumb"
+              />
+            </div>
+
+            <!-- Upload error -->
+            <p v-if="uploadError" class="form-error">{{ uploadError }}</p>
           </div>
 
           <!-- Tag presets -->
@@ -214,10 +364,11 @@ function handleSubmit() {
           <button
             class="btn-save"
             type="button"
-            :disabled="saving || !form.title.trim()"
+            :disabled="saving || isUploading || !form.title.trim()"
             @click="handleSubmit"
           >
-            <span v-if="!saving">{{
+            <span v-if="isUploading">{{ uploadPhaseLabel }}</span>
+            <span v-else-if="!saving">{{
               mode === "add" ? "Add Product" : "Save Changes"
             }}</span>
             <span v-else class="spinner"></span>
@@ -247,8 +398,8 @@ function handleSubmit() {
   border-radius: 20px;
   width: 100%;
   max-width: 660px;
-  max-height: 90vh;
-  padding-inline: .75rem;
+  max-height: 95vh;
+  padding-inline: 0.75rem;
   display: flex;
   flex-direction: column;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
@@ -290,7 +441,7 @@ function handleSubmit() {
 
 .modal-body {
   overflow-y: auto;
-  padding: 20px 24px;
+  padding: 12px 24px;
   flex: 1;
 }
 
@@ -345,32 +496,157 @@ function handleSubmit() {
   min-height: 80px;
 }
 
-/* Radio row */
-.radio-row {
+/* Category toggle */
+.cat-toggle {
   display: flex;
-  gap: 20px;
+  gap: 8px;
 }
-.radio-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.9rem;
+.cat-btn {
+  flex: 1;
+  padding: 11px 16px;
+  border: 2px solid #f0d4d8;
+  border-radius: var(--radius-md, 12px);
+  background: #fdf8f9;
+  font-size: 0.92rem;
+  font-family: var(--font-body);
+  color: var(--mid);
   cursor: pointer;
+  font-weight: 500;
+  text-align: center;
+  transition:
+    background 0.18s,
+    border-color 0.18s,
+    color 0.18s,
+    box-shadow 0.18s;
 }
-.radio-label input[type="radio"] {
-  accent-color: var(--primrose);
+.cat-btn:hover {
+  border-color: var(--primrose);
+  color: var(--dark);
+  background: #fff5f6;
+}
+.cat-btn.active {
+  background: linear-gradient(135deg, var(--primrose), var(--primrose-deep));
+  border-color: transparent;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(242, 151, 160, 0.35);
 }
 
-/* Image preview */
-.img-preview-wrap {
-  margin-top: 8px;
+/* Current image preview (edit mode) */
+.current-image-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
 }
-.img-preview {
-  width: 80px;
-  height: 80px;
+.current-image-label {
+  font-size: 0.78rem;
+  color: #b0a0a4;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.current-image-thumb {
+  width: 100px;
+  height: 100px;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 8px;
   border: 1.5px solid #f0d4d8;
+}
+
+/* Drop zone */
+.drop-zone {
+  border: 2px dashed #f0d4d8;
+  border-radius: var(--radius-md, 12px);
+  background: #fdf8f9;
+  padding: 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+  position: relative;
+}
+.drop-zone:hover,
+.drop-zone.drag-over {
+  border-color: var(--primrose);
+  background: #fff5f6;
+}
+.drop-zone.drag-over {
+  background: #fff0f2;
+}
+.drop-zone.has-file {
+  border-style: solid;
+  padding: 12px 16px;
+}
+.file-input-hidden {
+  display: none;
+}
+.drop-zone-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.drop-zone-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+.drop-zone.is-notebook .drop-zone-thumb {
+  height: 150px;
+}
+.drop-zone-text {
+  font-size: 0.88rem;
+  color: var(--mid);
+}
+.current-image-wrap.is-notebook .current-image-thumb {
+  height: 150px;
+}
+.drop-zone-hint {
+  font-size: 0.75rem;
+  color: #b0a0a4;
+}
+.drop-zone-thumb {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1.5px solid #f0d4d8;
+  flex-shrink: 0;
+}
+.drop-zone-filename {
+  font-size: 0.85rem;
+  color: var(--dark);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.drop-zone-clear {
+  background: #f8eaec;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  color: var(--mid);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.drop-zone-clear:hover {
+  background: var(--primrose);
+  color: #fff;
 }
 
 /* Tag presets */

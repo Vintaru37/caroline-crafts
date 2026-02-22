@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useProducts } from "../composables/useProducts";
 import type { AdminProduct, ProductCategory } from "../composables/useProducts";
 import { supabase } from "../lib/supabase";
+import { deleteProductImage } from "../composables/useImageUpload";
 import logoImg from "../assets/images/logo.png";
 
 import AdminLoginScreen from "../components/admin/AdminLoginScreen.vue";
@@ -117,7 +118,12 @@ async function handleSave(formData: Omit<AdminProduct, "id">) {
       await addProduct(formData);
       showToast("Product added!");
     } else if (editingId.value) {
+      const oldImage = modalInitialData.value?.image ?? "";
       await updateProduct(editingId.value, formData);
+      // Delete the replaced image from storage (non-fatal, errors are logged)
+      if (oldImage && oldImage !== formData.image) {
+        await deleteProductImage(oldImage);
+      }
       showToast("Product updated!");
     }
     showModal.value = false;
