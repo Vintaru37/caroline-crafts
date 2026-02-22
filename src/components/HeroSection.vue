@@ -644,7 +644,7 @@ import heroNotebook3 from "../assets/images/notebooks/happy-like-quokka.webp";
 
 .hero__book--d {
   width: 170px;
-  height: 234px;
+  height: 255px;
   bottom: 14px;
   left: 152px;
   z-index: 5;
@@ -654,8 +654,8 @@ import heroNotebook3 from "../assets/images/notebooks/happy-like-quokka.webp";
 }
 
 .hero__book--e {
-  width: 152px;
-  height: 210px;
+  width: 150px;
+  height: 225px;
   bottom: 18px;
   left: 10px;
   z-index: 1;
@@ -665,8 +665,8 @@ import heroNotebook3 from "../assets/images/notebooks/happy-like-quokka.webp";
 }
 
 .hero__book--f {
-  width: 152px;
-  height: 210px;
+  width: 150px;
+  height: 225px;
   bottom: 10px;
   right: 10px;
   z-index: 1;

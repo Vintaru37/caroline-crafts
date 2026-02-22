@@ -27,7 +27,9 @@ function closeMenu() {
           alt="CarolineCrafts logo"
           class="navbar__logo-img"
         />
-        <span class="navbar__logo-text">Caroline<strong class="navbar__logo-accent">Crafts</strong></span>
+        <span class="navbar__logo-text"
+          >Caroline<strong class="navbar__logo-accent">Crafts</strong></span
+        >
       </RouterLink>
 
       <!-- Desktop nav -->
@@ -122,7 +124,7 @@ function closeMenu() {
   transition:
     opacity var(--transition),
     transform var(--transition);
-    /* font-weight: bold; */
+  /* font-weight: bold; */
 }
 
 /* .navbar__logo-accent {
@@ -293,15 +295,23 @@ function closeMenu() {
 
 /* ─── Mobile menu ────────────────────────────────────── */
 .navbar__mobile {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 12px;
+  right: 12px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 14px 20px 22px;
-  background: rgba(255, 248, 249, 0.92);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-top: 1px solid rgba(249, 208, 206, 0.5);
-  box-shadow: 0 16px 40px rgba(242, 151, 160, 0.12);
+  gap: 6px;
+  padding: 16px 14px 20px;
+  background: rgba(255, 248, 249, 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(249, 208, 206, 0.6);
+  border-radius: 22px;
+  box-shadow:
+    0 8px 32px rgba(242, 151, 160, 0.22),
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
 }
 
 .navbar__mobile-link {
@@ -357,17 +367,13 @@ function closeMenu() {
 /* ─── Slide animation ────────────────────────────────── */
 .slide-down-enter-active,
 .slide-down-leave-active {
-  transition:
-    max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.3s ease;
-  overflow: hidden;
-  max-height: 400px;
+  transition: all 0.35s;
 }
 
 .slide-down-enter-from,
 .slide-down-leave-to {
-  max-height: 0;
   opacity: 0;
+  transform: translateY(-10px) scale(0.97);
 }
 
 /* ─── Responsive ─────────────────────────────────────── */

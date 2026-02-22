@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch, watchEffect } from "vue";
+import {
+  computed,
+  nextTick,
+  ref,
+  watch,
+  watchEffect,
+  onMounted,
+  onBeforeUnmount,
+} from "vue";
 import { useRoute } from "vue-router";
 import FloatingDecor from "../components/FloatingDecor.vue";
 import ColoringBookCard from "../components/ColoringBookCard.vue";
@@ -57,6 +65,57 @@ const route = useRoute();
 const selected = ref<ProductKind>("all");
 const q = ref("");
 const productsRef = ref<HTMLElement | null>(null);
+
+const showScrollTop = ref(false);
+
+function onScroll() {
+  showScrollTop.value = typeof window !== "undefined" && window.scrollY > 200;
+}
+
+function scrollToTop() {
+  if (typeof window !== "undefined") {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+
+onMounted(() => {
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", onScroll);
+});
+
+// --- Products-view specific reveal observer (starts earlier for cards) ---
+let prodObserver: IntersectionObserver | null = null;
+
+function setupProductReveals() {
+  // clean up previous
+  prodObserver?.disconnect();
+
+  prodObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          prodObserver?.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1, rootMargin: "0px 0px 24px 0px" },
+  );
+
+  // Observe only product card reveals inside this view
+  nextTick(() => {
+    document
+      .querySelectorAll(".card-grid .reveal:not(.is-visible)")
+      .forEach((el) => prodObserver?.observe(el));
+  });
+}
+
+onMounted(() => setupProductReveals());
+onBeforeUnmount(() => prodObserver?.disconnect());
 
 watchEffect(() => {
   const q = (route.query.kind ?? "all") as string;
@@ -118,6 +177,8 @@ const filtered = computed(() => {
 // the IntersectionObserver detecting it (it only fires on state *changes*).
 // Unobserving then re-observing forces the IO to report current visibility.
 watch(filtered, () => nextTick(refresh));
+// Re-run products-specific observer when the filtered list changes
+watch(filtered, () => nextTick(setupProductReveals));
 
 // When user types in the search box, scroll back to the top of the products
 watch(q, (newVal, oldVal) => {
@@ -277,6 +338,19 @@ watch(q, (newVal, oldVal) => {
               :class="`reveal-delay-${(i % 5) + 1}`"
             />
           </div>
+
+          <!-- Scroll to top button -->
+          <button
+            v-show="showScrollTop"
+            class="scroll-top"
+            @click="scrollToTop"
+            aria-label="Scroll to top"
+          >
+            <svg viewBox="0 0 24 24" class="icon-svg" aria-hidden="true">
+              <path d="M12 8l-6 6h12z" fill="currentColor" />
+            </svg>
+            Scroll to top
+          </button>
         </template>
       </div>
     </section>
@@ -496,6 +570,18 @@ watch(q, (newVal, oldVal) => {
   }
 }
 
+/* Disable sticky header on small screens to save vertical space */
+@media (max-width: 600px) {
+  .products__top {
+    position: static;
+    top: auto;
+    z-index: auto;
+    background: transparent;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+}
+
 .products-loading {
   display: flex;
   flex-direction: column;
@@ -522,5 +608,48 @@ watch(q, (newVal, oldVal) => {
   to {
     transform: rotate(360deg);
   }
+}
+
+.scroll-top {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  width: 140px;
+  height: 44px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 6px 14px;
+  background: linear-gradient(90deg, #fff6fb 0%, #ffeef6 100%);
+  color: #c84a6b;
+  border: 1px solid #c84a6b;
+  box-shadow: 0 12px 30px rgba(200, 74, 107, 0.08);
+  cursor: pointer;
+  z-index: 1200;
+  transition:
+    box-shadow 0.16s ease,
+    opacity 0.12s ease,
+    background 0.12s ease,
+    filter 0.12s ease;
+  font-weight: 700;
+}
+.scroll-top .icon-svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  fill: currentColor;
+}
+.scroll-top:hover {
+  box-shadow: 0 18px 48px rgba(200, 74, 107, 0.12);
+  filter: brightness(1.03);
+}
+.scroll-top:active {
+  box-shadow: 0 10px 28px rgba(200, 74, 107, 0.1);
+}
+.scroll-top:focus-visible {
+  outline: 3px solid rgba(200, 74, 107, 0.12);
+  outline-offset: 4px;
 }
 </style>

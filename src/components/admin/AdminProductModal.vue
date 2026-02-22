@@ -7,7 +7,7 @@ import type {
   ProductCategory,
 } from "../../composables/useProducts";
 
-const TAG_PRESETS = ["bestseller", "new", "sale", "limited edition"];
+const TAG_PRESETS = ["bestseller", "new", "sale", "for kids", "bold and easy"];
 
 interface FormData {
   category: ProductCategory;
