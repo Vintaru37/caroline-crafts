@@ -44,12 +44,12 @@ function closeMenu() {
           {{ link.label }}
         </RouterLink>
         <a
-          href="https://www.amazon.com"
+          href="https://www.amazon.com/stores/Caroline-Crafts/author/B0FD432Q7J"
           target="_blank"
           rel="noopener noreferrer"
           class="btn btn-primary navbar__cta"
         >
-          🛒 Amazon
+          Amazon
         </a>
       </nav>
 
@@ -78,13 +78,13 @@ function closeMenu() {
           {{ link.label }}
         </RouterLink>
         <a
-          href="https://www.amazon.com"
+          href="https://www.amazon.com/stores/Caroline-Crafts/author/B0FD432Q7J"
           target="_blank"
           rel="noopener noreferrer"
           class="btn btn-primary navbar__mobile-cta"
           @click="closeMenu"
         >
-          🛒 Amazon
+          Amazon
         </a>
       </nav>
     </Transition>
@@ -124,13 +124,12 @@ function closeMenu() {
   transition:
     opacity var(--transition),
     transform var(--transition);
-  /* font-weight: bold; */
 }
 
-/* .navbar__logo-accent {
+.navbar__logo-accent {
   font-family: var(--font-accent);
   font-size: 1.6rem;
-} */
+}
 
 .navbar__logo:hover {
   opacity: 0.85;
@@ -162,7 +161,7 @@ function closeMenu() {
 
 .navbar__link {
   position: relative;
-  padding: 4px 18px;
+  padding: 4px 24px;
   border-radius: 50px;
   font-size: 1.25rem;
   font-weight: 700;

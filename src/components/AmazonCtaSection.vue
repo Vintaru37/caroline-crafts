@@ -21,7 +21,7 @@
 
       <div class="cta-banner__action">
         <a
-          href="https://www.amazon.com"
+          href="https://www.amazon.com/stores/Caroline-Crafts/author/B0FD432Q7J"
           target="_blank"
           rel="noopener noreferrer"
           class="cta-btn"

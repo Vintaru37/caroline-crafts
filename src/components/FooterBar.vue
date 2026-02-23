@@ -16,7 +16,7 @@ import amazonImg from "../assets/images/amazon-icon.png";
             alt="CarolineCrafts logo"
             class="footer__logo-img"
           />
-          Caroline<strong>Crafts</strong>
+          Caroline<strong class="footer__logo-accent">Crafts</strong>
         </div>
         <p class="footer__tagline">
           Handcrafted coloring books and notebooks<br />
@@ -34,7 +34,7 @@ import amazonImg from "../assets/images/amazon-icon.png";
       <div class="footer__col">
         <h4 class="footer__heading">Find me</h4>
         <a
-          href="https://www.instagram.com"
+          href="https://www.instagram.com/itscarolinecrafts"
           target="_blank"
           rel="noopener noreferrer"
           class="footer__social"
@@ -47,7 +47,7 @@ import amazonImg from "../assets/images/amazon-icon.png";
           Instagram
         </a>
         <a
-          href="https://www.tiktok.com"
+          href="https://www.tiktok.com/@itscarolinecrafts"
           target="_blank"
           rel="noopener noreferrer"
           class="footer__social"
@@ -56,7 +56,7 @@ import amazonImg from "../assets/images/amazon-icon.png";
           TikTok
         </a>
         <a
-          href="https://www.amazon.com"
+          href="https://www.amazon.com/stores/Caroline-Crafts/author/B0FD432Q7J"
           target="_blank"
           rel="noopener noreferrer"
           class="footer__social"
@@ -102,6 +102,11 @@ import amazonImg from "../assets/images/amazon-icon.png";
   font-family: var(--font-heading);
   font-size: 1.4rem;
   color: var(--dark);
+}
+
+.footer__logo-accent {
+  font-family: var(--font-accent);
+  font-size: 1.7rem;
 }
 
 .footer__logo-img {

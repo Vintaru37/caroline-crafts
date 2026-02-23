@@ -15,7 +15,7 @@ import tiktokIcon from "../assets/images/tiktok-icon.png";
 
       <div class="social-cards">
         <a
-          href="https://www.instagram.com"
+          href="https://www.instagram.com/itscarolinecrafts"
           target="_blank"
           rel="noopener noreferrer"
           class="social-card social-card--ig"
@@ -25,13 +25,13 @@ import tiktokIcon from "../assets/images/tiktok-icon.png";
           </div>
           <div class="social-card__body">
             <strong>Instagram</strong>
-            <span>@carolinecrafts</span>
+            <span>@itscarolinecrafts</span>
           </div>
           <span class="social-card__arrow">→</span>
         </a>
 
         <a
-          href="https://www.tiktok.com"
+          href="https://www.tiktok.com/@itscarolinecrafts"
           target="_blank"
           rel="noopener noreferrer"
           class="social-card social-card--tt"
@@ -41,7 +41,7 @@ import tiktokIcon from "../assets/images/tiktok-icon.png";
           </div>
           <div class="social-card__body">
             <strong>TikTok</strong>
-            <span>@carolinecrafts</span>
+            <span>@itscarolinecrafts</span>
           </div>
           <span class="social-card__arrow">→</span>
         </a>

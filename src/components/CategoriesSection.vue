@@ -11,7 +11,7 @@ import nbImg3 from "../assets/images/notebooks/happy-like-quokka.webp";
 const features = [
   {
     title: "Coloring Books",
-    desc: "Beautiful floral, mandala and nature patterns. Perfect relaxation for adults and children.",
+    desc: "Coloring pages perfect for me time, relaxation, and effective stress relief — a peaceful moment just for you.",
     to: { path: "/products", query: { kind: "coloring-books" } },
     type: "coloring",
     fanImages: [cbImg1, cbImg2, cbImg3],
@@ -27,7 +27,7 @@ const features = [
   },
   {
     title: "Notebooks",
-    desc: "Elegant bullet journals, notebooks and diaries in soft pastel covers.",
+    desc: "Notebooks perfect for organization, notes, and everyday doodles — with cute covers to make your day a little brighter.",
     to: { path: "/products", query: { kind: "notebooks" } },
     type: "notebook",
     fanImages: [nbImg1, nbImg2, nbImg3],
@@ -290,7 +290,7 @@ const features = [
   position: relative;
   z-index: 3;
   width: 100%;
-  height: 240px;
+  min-height: 240px;
   margin: 0 0 32px;
   flex-shrink: 0;
 }
@@ -343,15 +343,15 @@ const features = [
   border-radius: 12px;
 }
 .feature-card.is-coloring .fan-book--0 {
-  transform: translate(calc(-50% - 38px), 8px) rotate(-14deg);
+  transform: translate(calc(-50% - 38px), 0px) rotate(-14deg);
   z-index: 1;
 }
 .feature-card.is-coloring .fan-book--1 {
-  transform: translateX(-50%) rotate(0deg);
+  transform: translate(-50%, -8px) rotate(0deg);
   z-index: 3;
 }
 .feature-card.is-coloring .fan-book--2 {
-  transform: translate(calc(-50% + 38px), 8px) rotate(14deg);
+  transform: translate(calc(-50% + 38px), 0px) rotate(14deg);
   z-index: 2;
 }
 .feature-card.is-coloring:hover .fan-book--0 {
@@ -382,7 +382,7 @@ const features = [
   color: #5a4040;
   line-height: 1.7;
   flex: 1;
-  max-width: 88%;
+  max-width: 96%;
 }
 
 /* ── CTA pill ────────────────────────────────────── */

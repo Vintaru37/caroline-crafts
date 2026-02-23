@@ -5,6 +5,7 @@ import FloatingDecor from "../components/FloatingDecor.vue";
 import { useReveal } from "../composables/useReveal";
 import instagramIcon from "../assets/images/instagram-icon.png";
 import tiktokIcon from "../assets/images/tiktok-icon.png";
+import amazonIcon from "../assets/images/amazon-icon.png";
 
 useReveal();
 
@@ -14,19 +15,27 @@ useReveal();
 const faqs = [
   {
     q: "Where can I buy your books?",
-    a: 'All my coloring books and notebooks are available on Amazon. Simply search for "CarolineCrafts" or follow the links on the product pages — shipping is handled directly by Amazon.',
+    a: "All my coloring books and notebooks are available on Amazon. Simply follow the links on the product pages — shipping is handled directly by Amazon.",
   },
   {
     q: "Do you ship internationally?",
     a: "Yes! Because my books are printed and shipped through Amazon KDP, they are available worldwide wherever Amazon operates. Delivery times and costs depend on your location.",
   },
   {
-    q: "Can you create a custom design?",
-    a: "I occasionally take on custom commissions for coloring books and themed notebooks. Send me a message with your idea and I'll let you know about availability and pricing.",
+    q: "Who are your products for?",
+    a: "My products are designed for anyone who enjoys creativity, relaxation, organization, or simply taking a mindful break during a busy day.",
   },
   {
     q: "How can I follow your creative process?",
-    a: "I share behind-the-scenes timelapse videos, new design previews, and sneak peeks on Instagram and TikTok. Follow @carolinecrafts to stay updated on every new release!",
+    a: "I share timelapse videos, and sneak peeks on Instagram and TikTok. Follow @itscarolinecrafts to stay updated on every new release!",
+  },
+  {
+    q: "Can I use your coloring pages for personal use?",
+    a: "Yes! All coloring pages are for personal use only. However, they may not be reproduced, distributed, or used commercially without permission.",
+  },
+  {
+    q: "Do you offer custom designs or collaborations?",
+    a: "At this time, I do not offer custom design services.",
   },
 ];
 
@@ -175,7 +184,7 @@ async function handleSubmit() {
             <div class="social-cards">
               <!-- Instagram -->
               <a
-                href="https://www.instagram.com"
+                href="https://www.instagram.com/itscarolinecrafts"
                 target="_blank"
                 rel="noopener"
                 class="social-card"
@@ -188,7 +197,7 @@ async function handleSubmit() {
 
               <!-- TikTok -->
               <a
-                href="https://www.tiktok.com"
+                href="https://www.tiktok.com/@itscarolinecrafts"
                 target="_blank"
                 rel="noopener"
                 class="social-card"
@@ -197,6 +206,19 @@ async function handleSubmit() {
                   <img :src="tiktokIcon" alt="TikTok" />
                 </div>
                 <span class="social-card__name">TikTok</span>
+              </a>
+
+              <!-- Amazon -->
+              <a
+                href="https://www.amazon.com/stores/Caroline-Crafts/author/B0FD432Q7J"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="social-card"
+              >
+                <div class="social-card__icon">
+                  <img :src="amazonIcon" alt="Amazon" />
+                </div>
+                <span class="social-card__name">Amazon Store</span>
               </a>
             </div>
           </div>
@@ -307,7 +329,7 @@ async function handleSubmit() {
 }
 
 .faq-item__btn:hover {
-  background: var(--lime-light);
+  background: #ffd8cc;
 }
 
 .faq-item__diamond {

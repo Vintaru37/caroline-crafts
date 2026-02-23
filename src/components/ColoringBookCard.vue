@@ -40,7 +40,10 @@ const props = defineProps<{
 
       <a
         class="product-card__link"
-        :href="props.product.amazonUrl || 'https://www.amazon.com'"
+        :href="
+          props.product.amazonUrl ||
+          'https://www.amazon.com/stores/Caroline-Crafts/author/B0FD432Q7J'
+        "
         target="_blank"
         rel="noopener noreferrer"
       >

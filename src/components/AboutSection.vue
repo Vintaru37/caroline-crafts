@@ -25,7 +25,6 @@ import aboutMeImg from "../assets/images/about-me2.png";
         <p class="about__body">
           Every page, every pattern – is a piece of my heart. I believe that
           coloring and handwriting are the most beautiful forms of relaxation.
-          🌿
         </p>
         <RouterLink to="/contact" class="btn btn-primary about__btn">
           Let's get to know each other
