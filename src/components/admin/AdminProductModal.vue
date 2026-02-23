@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, watch, computed, ref } from "vue";
-import { resolveImage } from "../../composables/useProducts";
+import { resolveImage, parseTags } from "../../composables/useProducts";
 import { uploadProductImage } from "../../composables/useImageUpload";
 import type {
   AdminProduct,
@@ -8,6 +8,7 @@ import type {
 } from "../../composables/useProducts";
 
 const TAG_PRESETS = ["bestseller", "new", "sale", "for kids", "bold and easy"];
+const NOTEBOOK_PRESETS = ["Lined", "Grid", "Journal", "Planner"];
 
 interface FormData {
   category: ProductCategory;
@@ -46,6 +47,40 @@ function blankForm(): FormData {
 
 const form = reactive<FormData>(blankForm());
 
+// ── Multi-tag state ───────────────────────────────────────────────────────────
+const selectedTags = ref<string[]>([]);
+const customTagInput = ref("");
+
+function toggleTag(t: string) {
+  const i = selectedTags.value.indexOf(t);
+  if (i === -1) selectedTags.value.push(t);
+  else selectedTags.value.splice(i, 1);
+}
+
+function removeTag(t: string) {
+  selectedTags.value = selectedTags.value.filter((x) => x !== t);
+}
+
+function addCustomTag() {
+  const parts = customTagInput.value
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+  for (const part of parts) {
+    if (!selectedTags.value.includes(part)) {
+      selectedTags.value.push(part);
+    }
+  }
+  customTagInput.value = "";
+}
+
+function onTagKeydown(e: KeyboardEvent) {
+  if (e.key === "Enter" || e.key === ",") {
+    e.preventDefault();
+    addCustomTag();
+  }
+}
+
 // ── Image upload state ────────────────────────────────────────────────────────
 const fileInputRef = ref<HTMLInputElement | null>(null);
 const pendingFile = ref<File | null>(null);
@@ -70,6 +105,8 @@ watch(
       form.title = src.title;
       form.desc = src.desc;
       form.tag = src.tag;
+      selectedTags.value = parseTags(src.tag);
+      customTagInput.value = "";
       form.image = src.image;
       form.amazonUrl = src.amazonUrl;
       form.notebookType = src.notebookType ?? "";
@@ -87,8 +124,8 @@ watch(
   },
 );
 
-function toggleTag(t: string) {
-  form.tag = form.tag === t ? "" : t;
+function toggleNotebookType(t: string) {
+  form.notebookType = form.notebookType === t ? "" : t;
 }
 
 // Preview for the text-field image (filename or https://… URL)
@@ -155,6 +192,7 @@ async function handleSubmit() {
     isUploading.value = false;
   }
 
+  form.tag = selectedTags.value.join(",");
   emit("save", { ...form });
 }
 </script>
@@ -306,28 +344,57 @@ async function handleSubmit() {
             <p v-if="uploadError" class="form-error">{{ uploadError }}</p>
           </div>
 
-          <!-- Tag presets -->
+          <!-- Tags (multi) -->
           <div class="form-group">
-            <label class="form-label">Tag</label>
+            <label class="form-label">Tags</label>
+
+            <!-- Selected removable pills -->
+            <div v-if="selectedTags.length" class="selected-tags">
+              <span v-for="t in selectedTags" :key="t" class="selected-tag">
+                {{ t }}
+                <button
+                  type="button"
+                  class="selected-tag__remove"
+                  @click="removeTag(t)"
+                  :aria-label="`Remove tag ${t}`"
+                >
+                  ×
+                </button>
+              </span>
+            </div>
+
+            <!-- Preset chips (multi-select) -->
+
+            <!-- Custom tag input -->
+            <div class="tag-input-row">
+              <input
+                v-model="customTagInput"
+                class="form-input"
+                type="text"
+                placeholder="Type a tag and press Enter (or comma-separate multiple)…"
+                @keydown="onTagKeydown"
+              />
+              <button
+                type="button"
+                class="btn-add-tag"
+                :disabled="!customTagInput.trim()"
+                @click="addCustomTag"
+              >
+                Add
+              </button>
+            </div>
             <div class="tag-presets">
               <button
                 v-for="t in TAG_PRESETS"
                 :key="t"
                 type="button"
                 class="preset-chip"
-                :class="{ active: form.tag === t }"
+                :class="{ active: selectedTags.includes(t) }"
                 @click="toggleTag(t)"
               >
                 {{ t }}
               </button>
             </div>
-            <input
-              v-model="form.tag"
-              class="form-input"
-              type="text"
-              placeholder="Or type a custom tag…"
-              style="margin-top: 8px"
-            />
           </div>
 
           <!-- Amazon URL -->
@@ -345,6 +412,18 @@ async function handleSubmit() {
           <!-- Notebook type (only for notebooks) -->
           <div v-if="form.category === 'notebook'" class="form-group">
             <label class="form-label" for="f-nbtype">Notebook Type</label>
+            <div class="type-presets">
+              <button
+                v-for="nb in NOTEBOOK_PRESETS"
+                :key="nb"
+                type="button"
+                class="preset-chip"
+                :class="{ active: form.notebookType === nb }"
+                @click="toggleNotebookType(nb)"
+              >
+                {{ nb }}
+              </button>
+            </div>
             <input
               id="f-nbtype"
               v-model="form.notebookType"
@@ -649,11 +728,90 @@ async function handleSubmit() {
   color: #fff;
 }
 
+/* Selected tags */
+.selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.selected-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--primrose);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 10px 4px 12px;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+.selected-tag__remove {
+  background: rgba(255, 255, 255, 0.28);
+  border: none;
+  color: #fff;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.12s;
+}
+.selected-tag__remove:hover {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+/* Tag input row */
+.tag-input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.tag-input-row .form-input {
+  flex: 1;
+}
+.btn-add-tag {
+  padding: 0 18px;
+  background: #fdf8f9;
+  border: 1.5px solid #f0d4d8;
+  border-radius: var(--radius-md, 12px);
+  font-size: 0.88rem;
+  font-family: var(--font-body);
+  font-weight: 700;
+  color: var(--primrose-deep);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+.btn-add-tag:hover:not(:disabled) {
+  background: #fff0f2;
+  border-color: var(--primrose);
+}
+.btn-add-tag:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* Tag presets */
 .tag-presets {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  margin-top: 8px;
+}
+.type-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 .preset-chip {
   padding: 5px 14px;

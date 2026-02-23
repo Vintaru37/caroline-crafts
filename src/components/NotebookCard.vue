@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { parseTags } from "../composables/useProducts";
 const props = defineProps<{
   product: {
     image: string;
@@ -6,6 +7,7 @@ const props = defineProps<{
     desc: string;
     tag: string;
     amazonUrl?: string;
+    notebookType?: string;
   };
 }>();
 </script>
@@ -19,9 +21,23 @@ const props = defineProps<{
         :alt="props.product.title"
         class="product-card__image"
       />
-      <span v-if="props.product.tag" class="product-card__tag">{{
-        props.product.tag
-      }}</span>
+      <div
+        v-if="parseTags(props.product.tag).length"
+        class="product-card__tags"
+      >
+        <span
+          v-for="t in parseTags(props.product.tag)"
+          :key="t"
+          class="product-card__tag"
+          >{{ t }}</span
+        >
+      </div>
+      <span
+        v-if="props.product.notebookType"
+        class="product-card__tag product-card__tag--bottom"
+      >
+        {{ props.product.notebookType }}
+      </span>
     </div>
 
     <div class="product-card__body">
@@ -44,5 +60,25 @@ const props = defineProps<{
 <style scoped>
 .product-card__cover--tall {
   aspect-ratio: 2 / 3;
+}
+
+/* ensure the cover is a positioned container for absolute pills */
+.product-card__cover {
+  position: relative;
+  overflow: hidden;
+}
+
+/* bottom variant: reuse existing pill visuals, just anchor to image bottom */
+.product-card__tag--bottom {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  transform: translateY(0);
+}
+
+/* ensure bottom variant doesn't inherit top/right from global tag */
+.product-card__tag--bottom {
+  top: auto;
+  right: auto;
 }
 </style>

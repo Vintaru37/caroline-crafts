@@ -55,6 +55,7 @@ const allProducts = computed<Product[]>(() => {
     metaB: n.notebookType,
     tag: n.tag,
     amazonUrl: n.amazonUrl,
+    notebookType: n.notebookType,
   }));
 
   return [...books, ...nbs];

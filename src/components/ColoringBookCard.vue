@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { parseTags } from "../composables/useProducts";
 const props = defineProps<{
   product: {
     image: string;
@@ -19,9 +20,17 @@ const props = defineProps<{
         :alt="props.product.title"
         class="product-card__image"
       />
-      <span v-if="props.product.tag" class="product-card__tag">{{
-        props.product.tag
-      }}</span>
+      <div
+        v-if="parseTags(props.product.tag).length"
+        class="product-card__tags"
+      >
+        <span
+          v-for="t in parseTags(props.product.tag)"
+          :key="t"
+          class="product-card__tag"
+          >{{ t }}</span
+        >
+      </div>
     </div>
 
     <div class="product-card__body">

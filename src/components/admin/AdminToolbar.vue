@@ -17,6 +17,7 @@ const emit = defineEmits<{
   add: [];
   export: [];
   importFile: [file: File];
+  openSettings: [];
 }>();
 
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -91,6 +92,21 @@ function handleFileChange(e: Event) {
       <!-- Primary action -->
       <button class="btn-add" @click="emit('add')">
         <span class="btn-add__icon">+</span> Add Product
+      </button>
+
+      <!-- Settings cog -->
+      <button
+        class="btn-settings"
+        title="Table settings"
+        aria-label="Open table settings"
+        @click="emit('openSettings')"
+      >
+        <svg class="settings-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.04 7.04 0 0 0-1.62-.94l-.36-2.54A.484.484 0 0 0 14 2h-4c-.25 0-.46.18-.49.42l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.08.63-.08.94s.03.64.08.94l-2.03 1.58a.47.47 0 0 0-.12.61l1.92 3.32c.12.22.37.3.59.22l2.39-.96c.5.37 1.03.7 1.62.94l.36 2.54c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.03-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"
+            fill="currentColor"
+          />
+        </svg>
       </button>
     </div>
 
@@ -259,6 +275,37 @@ function handleFileChange(e: Event) {
 .btn-add:hover {
   opacity: 0.9;
   transform: translateY(-1px);
+}
+
+.btn-settings {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: #fdf8f9;
+  border: 1.5px solid #f0d4d8;
+  border-radius: var(--radius-md, 12px);
+  color: var(--mid, #8a5560);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s,
+    transform 0.15s;
+}
+.btn-settings:hover {
+  background: #f9ecee;
+  border-color: var(--primrose, #f297a0);
+  color: var(--primrose-deep, #c84a6b);
+  transform: rotate(30deg);
+}
+.settings-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+  fill: currentColor;
 }
 
 .btn-add__icon {

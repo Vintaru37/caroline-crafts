@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount, computed } from "vue";
 import draggable from "vuedraggable";
-import { resolveImage } from "../../composables/useProducts";
+import { resolveImage, parseTags } from "../../composables/useProducts";
 import type { AdminProduct } from "../../composables/useProducts";
+import type { TableSettings } from "./tableSettings";
 
 const props = defineProps<{
   filteredProducts: AdminProduct[];
@@ -10,6 +11,7 @@ const props = defineProps<{
   isLoading: boolean;
   loadError: string | null;
   isSavingOrder: boolean;
+  tableSettings?: TableSettings;
 }>();
 
 const emit = defineEmits<{
@@ -161,6 +163,91 @@ function cancelOrder() {
 function categoryLabel(cat: string) {
   return cat === "coloring-book" ? "Book" : "Notebook";
 }
+
+// Returns the active column settings for a given product's category,
+// falling back to all-visible when no settings are provided.
+function colSettings(cat: string) {
+  if (!props.tableSettings) {
+    return {
+      image: true,
+      title: true,
+      desc: true,
+      category: true,
+      tag: true,
+      type: true,
+      amazonUrl: true,
+    };
+  }
+  return cat === "coloring-book"
+    ? props.tableSettings.coloringBook
+    : props.tableSettings.notebook;
+}
+
+// For table headers we show a column if at least one visible product
+// would need it. When the list is empty, fall back to showing everything.
+const headerCols = computed(() => {
+  const list = props.filteredProducts;
+  if (!props.tableSettings || list.length === 0) {
+    return {
+      image: true,
+      title: true,
+      desc: true,
+      category: true,
+      tag: true,
+      type: true,
+      amazonUrl: true,
+    };
+  }
+  const result = {
+    image: false,
+    title: false,
+    desc: false,
+    category: false,
+    tag: false,
+    type: false,
+    amazonUrl: false,
+  };
+  for (const p of list) {
+    const s = colSettings(p.category);
+    if (s.image) result.image = true;
+    if (s.title) result.title = true;
+    if (s.desc) result.desc = true;
+    if (s.category) result.category = true;
+    if (s.tag) result.tag = true;
+    if (s.type) result.type = true;
+    if (s.amazonUrl) result.amazonUrl = true;
+  }
+  return result;
+});
+
+const act = computed(() => {
+  if (!props.tableSettings) {
+    return {
+      edit: true,
+      delete: true,
+      moveTop: true,
+      movePosition: true,
+      moveBottom: true,
+    };
+  }
+  return props.tableSettings.actions;
+});
+
+const headerColCount = computed(() => {
+  const hc = headerCols.value;
+  let c = 0;
+  if (props.isDraggable) c += 1;
+  if (hc.image) c += 1;
+  if (hc.title) c += 1;
+  if (hc.desc) c += 1;
+  if (hc.category) c += 1;
+  if (hc.tag) c += 1;
+  if (hc.type) c += 1;
+  if (hc.amazonUrl) c += 1;
+  // actions column
+  c += 1;
+  return c;
+});
 </script>
 
 <template>
@@ -208,29 +295,34 @@ function categoryLabel(cat: string) {
       </button>
     </div>
 
-    <!-- Empty state -->
-    <div v-if="!isLoading && filteredProducts.length === 0" class="empty-state">
-      <span class="empty-state__icon">🎨</span>
-      <p class="empty-state__text">No products found.</p>
-    </div>
-
     <table v-if="!isLoading" class="product-table">
       <thead>
         <tr>
           <th v-if="isDraggable" class="th-drag"></th>
-          <th class="th-img"></th>
-          <th>Title</th>
-          <th class="th-desc">Description</th>
-          <th>Category</th>
-          <th>Tag</th>
-          <th>Amazon URL</th>
+          <th v-if="headerCols.image" class="th-img"></th>
+          <th v-if="headerCols.title">Title</th>
+          <th v-if="headerCols.desc" class="th-desc">Description</th>
+          <th v-if="headerCols.category">Category</th>
+          <th v-if="headerCols.tag">Tag</th>
+          <th v-if="headerCols.type" class="th-type">Type</th>
+          <th v-if="headerCols.amazonUrl">Amazon URL</th>
           <th class="th-actions">Actions</th>
         </tr>
       </thead>
 
+      <!-- Empty-state row when there are no products -->
+      <tbody v-if="filteredProducts.length === 0">
+        <tr class="empty-state">
+          <td :colspan="headerColCount">
+            <span class="empty-state__icon">🎨</span>
+            <p class="empty-state__text">No products found.</p>
+          </td>
+        </tr>
+      </tbody>
+
       <!-- Draggable tbody (any category tab, no search) -->
       <draggable
-        v-if="isDraggable"
+        v-if="isDraggable && filteredProducts.length > 0"
         v-model="draggableList"
         tag="tbody"
         item-key="id"
@@ -244,30 +336,64 @@ function categoryLabel(cat: string) {
             <td class="td-drag">
               <span class="drag-handle" title="Drag to reorder">⠿</span>
             </td>
-            <td class="td-img">
+            <td v-if="headerCols.image" class="td-img">
               <img
+                v-if="colSettings(p.category).image"
                 :src="resolveImage(p.category, p.image)"
                 :alt="p.title"
                 class="product-thumb"
                 loading="lazy"
               />
             </td>
-            <td>
-              <span class="product-title">{{ p.title }}</span>
+            <td v-if="headerCols.title">
+              <span
+                v-if="colSettings(p.category).title"
+                class="product-title"
+                >{{ p.title }}</span
+              >
             </td>
-            <td class="td-desc">
-              <span class="product-desc">{{ p.desc }}</span>
+            <td v-if="headerCols.desc" class="td-desc">
+              <span v-if="colSettings(p.category).desc" class="product-desc">{{
+                p.desc
+              }}</span>
             </td>
-            <td>
-              <span class="cat-badge" :class="`cat-badge--${p.category}`">
+            <td v-if="headerCols.category">
+              <span
+                v-if="colSettings(p.category).category"
+                class="cat-badge"
+                :class="`cat-badge--${p.category}`"
+              >
                 {{ categoryLabel(p.category) }}
               </span>
             </td>
-            <td>
-              <span v-if="p.tag" class="tag-pill">{{ p.tag }}</span>
-              <span v-else class="no-tag">—</span>
+            <td v-if="headerCols.tag">
+              <template v-if="colSettings(p.category).tag">
+                <template v-if="parseTags(p.tag).length">
+                  <span
+                    v-for="t in parseTags(p.tag)"
+                    :key="t"
+                    class="tag-pill"
+                    >{{ t }}</span
+                  >
+                </template>
+                <span v-else class="no-tag">—</span>
+              </template>
             </td>
-            <td class="td-url">
+            <td v-if="headerCols.type" class="td-type">
+              <template v-if="colSettings(p.category).type">
+                <span
+                  v-if="p.notebookType"
+                  :class="[
+                    'type-text',
+                    `type-pill--${(p.notebookType || '').toLowerCase().replace(/\s+/g, '-')}`,
+                  ]"
+                >
+                  {{ p.notebookType }}
+                </span>
+                <span v-else class="no-tag">—</span>
+              </template>
+            </td>
+            <td v-if="headerCols.amazonUrl" class="td-url">
               <a
                 v-if="p.amazonUrl"
                 :href="p.amazonUrl"
@@ -278,9 +404,10 @@ function categoryLabel(cat: string) {
               >
               <span v-else class="no-tag">—</span>
             </td>
-            <td class="td-actions">
+            <td class="td-actions td-actions--draggable">
               <div class="move-controls" v-if="isDraggable">
                 <button
+                  v-if="act.moveTop"
                   class="move-btn"
                   title="Move to top"
                   @click="moveToTop(p.id)"
@@ -290,6 +417,7 @@ function categoryLabel(cat: string) {
                   </svg>
                 </button>
                 <button
+                  v-if="act.movePosition"
                   class="move-btn"
                   title="Move to position"
                   @click="moveToPositionPrompt(p.id)"
@@ -302,6 +430,7 @@ function categoryLabel(cat: string) {
                   </svg>
                 </button>
                 <button
+                  v-if="act.moveBottom"
                   class="move-btn"
                   title="Move to bottom"
                   @click="moveToBottom(p.id)"
@@ -311,6 +440,7 @@ function categoryLabel(cat: string) {
                   </svg>
                 </button>
                 <button
+                  v-if="act.edit"
                   class="action-btn action-btn--edit"
                   @click="emit('edit', p)"
                 >
@@ -322,6 +452,7 @@ function categoryLabel(cat: string) {
                   </svg>
                 </button>
                 <button
+                  v-if="act.delete"
                   class="action-btn action-btn--delete"
                   @click="emit('delete', p)"
                 >
@@ -339,32 +470,61 @@ function categoryLabel(cat: string) {
       </draggable>
 
       <!-- Static tbody (filtered / searched) -->
-      <tbody v-else>
+      <tbody v-else-if="filteredProducts.length > 0">
         <tr v-for="p in filteredProducts" :key="p.id" class="product-row">
-          <td class="td-img">
+          <td v-if="headerCols.image" class="td-img">
             <img
+              v-if="colSettings(p.category).image"
               :src="resolveImage(p.category, p.image)"
               :alt="p.title"
               class="product-thumb"
               loading="lazy"
             />
           </td>
-          <td>
-            <span class="product-title">{{ p.title }}</span>
+          <td v-if="headerCols.title">
+            <span v-if="colSettings(p.category).title" class="product-title">{{
+              p.title
+            }}</span>
           </td>
-          <td class="td-desc">
-            <span class="product-desc">{{ p.desc }}</span>
+          <td v-if="headerCols.desc" class="td-desc">
+            <span v-if="colSettings(p.category).desc" class="product-desc">{{
+              p.desc
+            }}</span>
           </td>
-          <td>
-            <span class="cat-badge" :class="`cat-badge--${p.category}`">
+          <td v-if="headerCols.category">
+            <span
+              v-if="colSettings(p.category).category"
+              class="cat-badge"
+              :class="`cat-badge--${p.category}`"
+            >
               {{ categoryLabel(p.category) }}
             </span>
           </td>
-          <td>
-            <span v-if="p.tag" class="tag-pill">{{ p.tag }}</span>
-            <span v-else class="no-tag">—</span>
+          <td v-if="headerCols.tag">
+            <template v-if="colSettings(p.category).tag">
+              <template v-if="parseTags(p.tag).length">
+                <span v-for="t in parseTags(p.tag)" :key="t" class="tag-pill">{{
+                  t
+                }}</span>
+              </template>
+              <span v-else class="no-tag">—</span>
+            </template>
           </td>
-          <td class="td-url">
+          <td v-if="headerCols.type" class="td-type">
+            <template v-if="colSettings(p.category).type">
+              <span
+                v-if="p.notebookType"
+                :class="[
+                  'type-text',
+                  `type-pill--${(p.notebookType || '').toLowerCase().replace(/\s+/g, '-')}`,
+                ]"
+              >
+                {{ p.notebookType }}
+              </span>
+              <span v-else class="no-tag">—</span>
+            </template>
+          </td>
+          <td v-if="headerCols.amazonUrl" class="td-url">
             <a
               v-if="p.amazonUrl"
               :href="p.amazonUrl"
@@ -375,8 +535,9 @@ function categoryLabel(cat: string) {
             >
             <span v-else class="no-tag">—</span>
           </td>
-          <td class="td-actions">
+          <td class="td-actions td-actions--static">
             <button
+              v-if="act.edit"
               class="action-btn action-btn--edit"
               @click="emit('edit', p)"
             >
@@ -388,6 +549,7 @@ function categoryLabel(cat: string) {
               </svg>
             </button>
             <button
+              v-if="act.delete"
               class="action-btn action-btn--delete"
               @click="emit('delete', p)"
             >
@@ -447,7 +609,7 @@ function categoryLabel(cat: string) {
 .table-wrap {
   flex: 1;
   overflow-x: auto;
-  padding: 24px 28px;
+  padding: 4px;
   position: relative;
 }
 
@@ -636,6 +798,9 @@ function categoryLabel(cat: string) {
 .th-img {
   width: 60px;
 }
+.th-type {
+  width: 110px;
+}
 .th-actions {
   width: 160px;
 }
@@ -744,6 +909,9 @@ function categoryLabel(cat: string) {
 
 /* Tag pill */
 .tag-pill {
+  display: inline-flex;
+  align-items: center;
+  margin: 2px 2px 2px 0;
   background: rgba(242, 151, 160, 0.14);
   border: 1px solid rgba(242, 151, 160, 0.35);
   color: var(--primrose-deep);
@@ -755,6 +923,45 @@ function categoryLabel(cat: string) {
 }
 .no-tag {
   color: #ccc;
+}
+
+.td-type {
+  white-space: nowrap;
+  color: var(--mid);
+  font-size: 0.85rem;
+}
+.type-text {
+  background: rgba(242, 151, 160, 0.14);
+  border: 1px solid rgba(242, 151, 160, 0.35);
+  color: var(--primrose-deep);
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  text-transform: capitalize;
+  font-weight: 700;
+}
+
+/* Type-specific colors */
+.type-pill--lined {
+  background: rgba(100, 150, 240, 0.12);
+  border-color: rgba(100, 150, 240, 0.28);
+  color: #2b6fb3;
+}
+.type-pill--grid {
+  background: rgba(110, 200, 140, 0.12);
+  border-color: rgba(110, 200, 140, 0.28);
+  color: #2e7d32;
+}
+.type-pill--journal {
+  background: rgba(160, 120, 200, 0.12);
+  border-color: rgba(160, 120, 200, 0.28);
+  color: #6a4fb1;
+}
+.type-pill--composition {
+  background: rgba(120, 120, 120, 0.08);
+  border-color: rgba(120, 120, 120, 0.16);
+  color: #4a4a4a;
 }
 
 /* Amazon link */
@@ -770,6 +977,11 @@ function categoryLabel(cat: string) {
 /* Actions */
 .td-actions {
   width: 160px;
+}
+.td-actions.td-actions--static {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .td-actions,
 .td-url {
@@ -787,9 +999,9 @@ function categoryLabel(cat: string) {
     background 0.15s,
     border-color 0.15s;
 
- & .icon-svg {
+  & .icon-svg {
     margin-bottom: 20px;
- }
+  }
 }
 .action-btn--edit {
   background: #f8f4ff;
@@ -866,8 +1078,8 @@ function categoryLabel(cat: string) {
 
 .scroll-top {
   position: fixed;
-  right: 16px;
-  bottom: 16px;
+  right: 10px;
+  bottom: 6px;
   width: 140px;
   height: 44px;
   border-radius: 999px;
@@ -963,16 +1175,13 @@ function categoryLabel(cat: string) {
 }
 
 @media (max-width: 768px) {
-  .table-wrap {
-    padding: 16px;
-  }
   .product-table {
     display: block;
     overflow-x: auto;
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1080px) {
   /* Hide description column on narrow screens */
   .th-desc,
   .td-desc {

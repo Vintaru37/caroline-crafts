@@ -13,6 +13,12 @@ import AdminProductTable from "../components/admin/AdminProductTable.vue";
 import AdminProductModal from "../components/admin/AdminProductModal.vue";
 import AdminDeleteModal from "../components/admin/AdminDeleteModal.vue";
 import AdminToast from "../components/admin/AdminToast.vue";
+import AdminTableSettingsModal from "../components/admin/AdminTableSettingsModal.vue";
+import {
+  type TableSettings,
+  loadTableSettings,
+  saveTableSettings,
+} from "../components/admin/tableSettings";
 
 // Auth
 const authenticated = ref(false);
@@ -141,7 +147,13 @@ const deleteTarget = ref<AdminProduct | null>(null);
 async function confirmDelete() {
   if (!deleteTarget.value) return;
   try {
+    // Capture image URL before deleting the DB row
+    const oldImage = deleteTarget.value.image ?? "";
     await deleteProduct(deleteTarget.value.id);
+    // Delete associated image from storage (non-fatal)
+    if (oldImage) {
+      await deleteProductImage(oldImage);
+    }
     deleteTarget.value = null;
     showToast("Product deleted.");
   } catch (err: unknown) {
@@ -186,11 +198,20 @@ async function handleImportFile(file: File) {
   }
 }
 
-// â”€â”€ Toast
+// ── Toast
 const toastMsg = ref("");
 const toastType = ref<"success" | "error">("success");
 const toastVisible = ref(false);
 let toastTimer: ReturnType<typeof setTimeout> | null = null;
+
+// ── Table settings
+const showTableSettings = ref(false);
+const tableSettings = ref<TableSettings>(loadTableSettings());
+
+function handleSettingsUpdate(val: TableSettings) {
+  tableSettings.value = val;
+  saveTableSettings(val);
+}
 
 function showToast(msg: string, type: "success" | "error" = "success") {
   if (toastTimer) clearTimeout(toastTimer);
@@ -226,6 +247,7 @@ onUnmounted(() => {
       @add="openAdd"
       @export="exportProducts"
       @importFile="handleImportFile"
+      @openSettings="showTableSettings = true"
     />
 
     <AdminProductTable
@@ -234,6 +256,7 @@ onUnmounted(() => {
       :isLoading="isLoading"
       :loadError="loadError"
       :isSavingOrder="isSavingOrder"
+      :tableSettings="tableSettings"
       @edit="openEdit"
       @delete="deleteTarget = $event"
       @reorder="handleReorder"
@@ -257,6 +280,13 @@ onUnmounted(() => {
     />
 
     <AdminToast :visible="toastVisible" :msg="toastMsg" :type="toastType" />
+
+    <AdminTableSettingsModal
+      :show="showTableSettings"
+      :settings="tableSettings"
+      @close="showTableSettings = false"
+      @update:settings="handleSettingsUpdate"
+    />
   </div>
 </template>
 

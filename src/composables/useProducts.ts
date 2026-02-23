@@ -43,6 +43,19 @@ export interface AdminProduct {
   sort_order?: number;
 }
 
+/**
+ * Parse a comma-separated tag string (as stored in the DB) into an array.
+ * "bestseller,new" → ["bestseller", "new"]
+ * "" / undefined   → []
+ */
+export function parseTags(tag: string | undefined | null): string[] {
+  if (!tag) return [];
+  return tag
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+}
+
 export function resolveImage(category: ProductCategory, image: string): string {
   // Already a full URL or absolute path (e.g. https://…) – return as-is
   if (
