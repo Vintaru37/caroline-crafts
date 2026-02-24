@@ -50,6 +50,14 @@ const router = createRouter({
         title: "Admin – CarolineCrafts",
       },
     },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "not-found",
+      component: () => import("../views/NotFoundView.vue"),
+      meta: {
+        title: "Page Not Found – CarolineCrafts",
+      },
+    },
   ],
   scrollBehavior() {
     return { top: 0, behavior: "smooth" };
