@@ -6,6 +6,7 @@ export interface ColumnSettings {
   tag: boolean;
   type: boolean;
   amazonUrl: boolean;
+  isVisible: boolean;
 }
 
 export interface ActionSettings {
@@ -31,6 +32,7 @@ export const defaultTableSettings = (): TableSettings => ({
     tag: true,
     type: false,
     amazonUrl: true,
+    isVisible: true,
   },
   notebook: {
     image: true,
@@ -40,6 +42,7 @@ export const defaultTableSettings = (): TableSettings => ({
     tag: true,
     type: true,
     amazonUrl: true,
+    isVisible: true,
   },
   actions: {
     edit: true,

@@ -19,6 +19,7 @@ const emit = defineEmits<{
   delete: [product: AdminProduct];
   reorder: [ids: string[]];
   reload: [];
+  toggleVisible: [product: AdminProduct];
 }>();
 
 // ── Draggable list ────────────────────────────────────────────────────────────
@@ -176,6 +177,7 @@ function colSettings(cat: string) {
       tag: true,
       type: true,
       amazonUrl: true,
+      isVisible: true,
     };
   }
   return cat === "coloring-book"
@@ -196,6 +198,7 @@ const headerCols = computed(() => {
       tag: true,
       type: true,
       amazonUrl: true,
+      isVisible: true,
     };
   }
   const result = {
@@ -206,6 +209,7 @@ const headerCols = computed(() => {
     tag: false,
     type: false,
     amazonUrl: false,
+    isVisible: false,
   };
   for (const p of list) {
     const s = colSettings(p.category);
@@ -216,6 +220,7 @@ const headerCols = computed(() => {
     if (s.tag) result.tag = true;
     if (s.type) result.type = true;
     if (s.amazonUrl) result.amazonUrl = true;
+    if (s.isVisible) result.isVisible = true;
   }
   return result;
 });
@@ -244,6 +249,7 @@ const headerColCount = computed(() => {
   if (hc.tag) c += 1;
   if (hc.type) c += 1;
   if (hc.amazonUrl) c += 1;
+  if (hc.isVisible) c += 1;
   // actions column
   c += 1;
   return c;
@@ -306,6 +312,7 @@ const headerColCount = computed(() => {
           <th v-if="headerCols.tag">Tag</th>
           <th v-if="headerCols.type" class="th-type">Type</th>
           <th v-if="headerCols.amazonUrl">Amazon URL</th>
+          <th v-if="headerCols.isVisible" class="th-visible">Visible</th>
           <th class="th-actions">Actions</th>
         </tr>
       </thead>
@@ -404,6 +411,42 @@ const headerColCount = computed(() => {
               >
               <span v-else class="no-tag">—</span>
             </td>
+            <td v-if="headerCols.isVisible" class="td-visible">
+              <button
+                v-if="colSettings(p.category).isVisible"
+                class="vis-toggle"
+                :class="{ 'vis-toggle--off': p.isVisible === false }"
+                :title="
+                  p.isVisible === false
+                    ? 'Hidden – click to show'
+                    : 'Visible – click to hide'
+                "
+                @click="emit('toggleVisible', p)"
+              >
+                <svg
+                  v-if="p.isVisible !== false"
+                  class="icon-svg"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <svg
+                  v-else
+                  class="icon-svg"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46A11.804 11.804 0 0 0 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+            </td>
             <td class="td-actions td-actions--draggable">
               <div class="move-controls" v-if="isDraggable">
                 <button
@@ -471,7 +514,12 @@ const headerColCount = computed(() => {
 
       <!-- Static tbody (filtered / searched) -->
       <tbody v-else-if="filteredProducts.length > 0">
-        <tr v-for="p in filteredProducts" :key="p.id" class="product-row">
+        <tr
+          v-for="p in filteredProducts"
+          :key="p.id"
+          class="product-row"
+          :class="{ 'product-row--hidden': p.isVisible === false }"
+        >
           <td v-if="headerCols.image" class="td-img">
             <img
               v-if="colSettings(p.category).image"
@@ -534,6 +582,42 @@ const headerColCount = computed(() => {
               >View ↗</a
             >
             <span v-else class="no-tag">—</span>
+          </td>
+          <td v-if="headerCols.isVisible" class="td-visible">
+            <button
+              v-if="colSettings(p.category).isVisible"
+              class="vis-toggle"
+              :class="{ 'vis-toggle--off': p.isVisible === false }"
+              :title="
+                p.isVisible === false
+                  ? 'Hidden – click to show'
+                  : 'Visible – click to hide'
+              "
+              @click="emit('toggleVisible', p)"
+            >
+              <svg
+                v-if="p.isVisible !== false"
+                class="icon-svg"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
+                  fill="currentColor"
+                />
+              </svg>
+              <svg
+                v-else
+                class="icon-svg"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46A11.804 11.804 0 0 0 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
           </td>
           <td class="td-actions td-actions--static">
             <button
@@ -600,7 +684,6 @@ const headerColCount = computed(() => {
       <svg viewBox="0 0 24 24" class="icon-svg" aria-hidden="true">
         <path d="M12 8l-6 6h12z" fill="currentColor" />
       </svg>
-      Scroll to top
     </button>
   </div>
 </template>
@@ -1078,16 +1161,15 @@ const headerColCount = computed(() => {
 
 .scroll-top {
   position: fixed;
-  right: 250px;
+  right: 450px;
   bottom: 6px;
-  width: 140px;
+  width: 44px;
   height: 44px;
-  border-radius: 999px;
+  border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 6px 14px;
   background: linear-gradient(90deg, #fff6fb 0%, #ffeef6 100%);
   color: #c84a6b;
   border: 1px solid #c84a6b;
@@ -1102,8 +1184,8 @@ const headerColCount = computed(() => {
   font-weight: 700;
 }
 .scroll-top .icon-svg {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   display: block;
   fill: currentColor;
 }
@@ -1117,15 +1199,6 @@ const headerColCount = computed(() => {
 .scroll-top:focus-visible {
   outline: 3px solid rgba(200, 74, 107, 0.12);
   outline-offset: 4px;
-}
-
-@media (max-width: 900px) {
-  .scroll-top {
-    left: 50%;
-    bottom: 96px;
-    width: 120px;
-    transform: translateX(-50%);
-  }
 }
 
 .pos-popup {
@@ -1187,5 +1260,51 @@ const headerColCount = computed(() => {
   .td-desc {
     display: none;
   }
+}
+
+/* Visibility column */
+.th-visible {
+  width: 64px;
+  text-align: center;
+}
+.td-visible {
+  text-align: center;
+}
+.vis-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #4caf50;
+  padding: 4px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.15s,
+    color 0.15s;
+  line-height: 0;
+}
+.vis-toggle:hover {
+  background: #f0faf0;
+}
+.vis-toggle--off {
+  color: #b0a0a4;
+}
+.vis-toggle--off:hover {
+  background: #f8f0f2;
+  color: #c94060;
+}
+.vis-toggle .icon-svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Dim rows for hidden products */
+.product-row--hidden {
+  opacity: 0.45;
+}
+.product-row--hidden:hover {
+  opacity: 0.75;
 }
 </style>

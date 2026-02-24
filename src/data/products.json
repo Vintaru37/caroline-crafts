@@ -7,7 +7,8 @@
     "tag": "bestseller",
     "image": "cozy-awawa.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-2",
@@ -17,7 +18,8 @@
     "tag": "",
     "image": "little-reminders.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-3",
@@ -27,7 +29,8 @@
     "tag": "",
     "image": "cozy-capybaras.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-4",
@@ -37,7 +40,8 @@
     "tag": "",
     "image": "wrapped-in-love.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-5",
@@ -47,7 +51,8 @@
     "tag": "",
     "image": "just-girly-stuff.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-6",
@@ -57,7 +62,8 @@
     "tag": "",
     "image": "just-awawa-days.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-7",
@@ -67,7 +73,8 @@
     "tag": "",
     "image": "zen-japan.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-8",
@@ -77,7 +84,8 @@
     "tag": "",
     "image": "busy-little-awawa.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-9",
@@ -87,7 +95,8 @@
     "tag": "",
     "image": "merry-moments-holiday.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-10",
@@ -97,7 +106,8 @@
     "tag": "",
     "image": "little-adventures.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-11",
@@ -107,7 +117,8 @@
     "tag": "",
     "image": "chill-spirits.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-12",
@@ -117,7 +128,8 @@
     "tag": "",
     "image": "self-love.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-13",
@@ -127,7 +139,8 @@
     "tag": "",
     "image": "spooky-season.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-14",
@@ -137,7 +150,8 @@
     "tag": "",
     "image": "cuteness-overload.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-15",
@@ -147,7 +161,8 @@
     "tag": "",
     "image": "dog-days-diaries.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-16",
@@ -157,7 +172,8 @@
     "tag": "",
     "image": "whole-year-with-alice-and-theo.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-17",
@@ -167,7 +183,8 @@
     "tag": "",
     "image": "time-with-nature.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-18",
@@ -177,7 +194,8 @@
     "tag": "bestseller",
     "image": "no-thoughts-only-awawa.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-19",
@@ -187,7 +205,8 @@
     "tag": "",
     "image": "furry-friends.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-20",
@@ -197,7 +216,8 @@
     "tag": "",
     "image": "cute-food.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-21",
@@ -207,7 +227,8 @@
     "tag": "",
     "image": "merry-moments-holiday.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "book-22",
@@ -217,7 +238,8 @@
     "tag": "",
     "image": "huggy-friends.webp",
     "amazonUrl": "",
-    "notebookType": ""
+    "notebookType": "",
+    "isVisible": true
   },
   {
     "id": "nb-1",
@@ -227,7 +249,8 @@
     "tag": "Bestseller",
     "image": "cute-axolotl.webp",
     "amazonUrl": "",
-    "notebookType": "Bullet Journal"
+    "notebookType": "Bullet Journal",
+    "isVisible": true
   },
   {
     "id": "nb-2",
@@ -237,7 +260,8 @@
     "tag": "",
     "image": "coquette-bunny.webp",
     "amazonUrl": "",
-    "notebookType": "Lined"
+    "notebookType": "Lined",
+    "isVisible": true
   },
   {
     "id": "nb-6",
@@ -247,7 +271,8 @@
     "tag": "",
     "image": "cute-coquette-bunny.webp",
     "amazonUrl": "",
-    "notebookType": "Lined"
+    "notebookType": "Lined",
+    "isVisible": true
   },
   {
     "id": "nb-7",
@@ -257,7 +282,8 @@
     "tag": "",
     "image": "happy-like-quokka.webp",
     "amazonUrl": "",
-    "notebookType": "Journal"
+    "notebookType": "Journal",
+    "isVisible": true
   },
   {
     "id": "nb-8",
@@ -267,7 +293,8 @@
     "tag": "",
     "image": "awawa-rock-hyrax-love.webp",
     "amazonUrl": "",
-    "notebookType": "Lined"
+    "notebookType": "Lined",
+    "isVisible": true
   },
   {
     "id": "nb-9",
@@ -277,7 +304,8 @@
     "tag": "",
     "image": "be-my-valentine.webp",
     "amazonUrl": "",
-    "notebookType": "Lined"
+    "notebookType": "Lined",
+    "isVisible": true
   },
   {
     "id": "nb-10",
@@ -287,7 +315,8 @@
     "tag": "",
     "image": "rock-hyrax-valentine.webp",
     "amazonUrl": "",
-    "notebookType": "Lined"
+    "notebookType": "Lined",
+    "isVisible": true
   },
   {
     "id": "nb-11",
@@ -297,7 +326,8 @@
     "tag": "",
     "image": "better-with-you.webp",
     "amazonUrl": "",
-    "notebookType": "Composition"
+    "notebookType": "Composition",
+    "isVisible": true
   },
   {
     "id": "nb-12",
@@ -307,7 +337,8 @@
     "tag": "",
     "image": "no-need-to-rush.webp",
     "amazonUrl": "",
-    "notebookType": "Lined"
+    "notebookType": "Lined",
+    "isVisible": true
   },
   {
     "id": "nb-13",
@@ -317,7 +348,8 @@
     "tag": "",
     "image": "cute-kawaii-rock-hyrax.webp",
     "amazonUrl": "",
-    "notebookType": "Lined"
+    "notebookType": "Lined",
+    "isVisible": true
   },
   {
     "id": "nb-14",
@@ -327,7 +359,8 @@
     "tag": "",
     "image": "cute-kawaii-opossum.webp",
     "amazonUrl": "",
-    "notebookType": "Lined"
+    "notebookType": "Lined",
+    "isVisible": true
   },
   {
     "id": "nb-15",
@@ -337,7 +370,8 @@
     "tag": "",
     "image": "eat-healthy-awawa.webp",
     "amazonUrl": "",
-    "notebookType": "Lined"
+    "notebookType": "Lined",
+    "isVisible": true
   },
   {
     "id": "nb-16",
@@ -347,7 +381,8 @@
     "tag": "",
     "image": "cute-otter-grid.webp",
     "amazonUrl": "",
-    "notebookType": "Grid"
+    "notebookType": "Grid",
+    "isVisible": true
   },
   {
     "id": "nb-17",
@@ -357,7 +392,8 @@
     "tag": "",
     "image": "christmas-ornaments-rock-hyrax.webp",
     "amazonUrl": "",
-    "notebookType": "Lined"
+    "notebookType": "Lined",
+    "isVisible": true
   },
   {
     "id": "nb-18",
@@ -367,7 +403,8 @@
     "tag": "",
     "image": "cute-quokka-grid.webp",
     "amazonUrl": "",
-    "notebookType": "Grid"
+    "notebookType": "Grid",
+    "isVisible": true
   },
   {
     "id": "nb-19",
@@ -377,7 +414,8 @@
     "tag": "",
     "image": "hyrax-santa-hat.webp",
     "amazonUrl": "",
-    "notebookType": "Lined"
+    "notebookType": "Lined",
+    "isVisible": true
   },
   {
     "id": "nb-20",
@@ -387,6 +425,7 @@
     "tag": "",
     "image": "ready-for-christmas.webp",
     "amazonUrl": "",
-    "notebookType": "Lined"
+    "notebookType": "Lined",
+    "isVisible": true
   }
 ]

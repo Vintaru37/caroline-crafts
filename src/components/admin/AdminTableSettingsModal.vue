@@ -50,6 +50,7 @@ const COLUMN_LABELS: Record<keyof ColumnSettings, string> = {
   tag: "Tag",
   type: "Type",
   amazonUrl: "Amazon URL",
+  isVisible: "Visible",
 };
 
 const ACTION_LABELS: Record<keyof ActionSettings, string> = {

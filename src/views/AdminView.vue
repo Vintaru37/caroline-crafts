@@ -168,6 +168,23 @@ async function confirmDelete() {
 // Drag-and-drop reorder
 const isSavingOrder = ref(false);
 
+async function handleToggleVisible(product: AdminProduct) {
+  try {
+    await updateProduct(product.id, { isVisible: product.isVisible === false });
+    showToast(
+      product.isVisible === false
+        ? `"${product.title}" is now visible.`
+        : `"${product.title}" is now hidden.`,
+    );
+  } catch (err: unknown) {
+    showToast(
+      "Failed to update visibility: " +
+        (err instanceof Error ? err.message : "Unknown error"),
+      "error",
+    );
+  }
+}
+
 async function handleReorder(ids: string[]) {
   isSavingOrder.value = true;
   try {
@@ -261,6 +278,7 @@ onUnmounted(() => {
       @delete="deleteTarget = $event"
       @reorder="handleReorder"
       @reload="reload"
+      @toggleVisible="handleToggleVisible"
     />
 
     <AdminProductModal

@@ -41,6 +41,8 @@ export interface AdminProduct {
   notebookType: string;
   /** Display order — lower = first */
   sort_order?: number;
+  /** Whether the product is shown on the public website */
+  isVisible?: boolean;
 }
 
 /**
@@ -130,13 +132,13 @@ export function useProducts() {
   // Resolved lists – images replaced with full asset URLs for display in cards
   const coloringBookList = computed(() =>
     state.products
-      .filter((p) => p.category === "coloring-book")
+      .filter((p) => p.category === "coloring-book" && p.isVisible !== false)
       .map((p) => ({ ...p, image: resolveImage(p.category, p.image) })),
   );
 
   const notebookList = computed(() =>
     state.products
-      .filter((p) => p.category === "notebook")
+      .filter((p) => p.category === "notebook" && p.isVisible !== false)
       .map((p) => ({ ...p, image: resolveImage(p.category, p.image) })),
   );
 

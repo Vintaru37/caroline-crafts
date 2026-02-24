@@ -449,4 +449,46 @@ const features = [
     font-size: 1.6rem;
   }
 }
+
+@media (max-width: 420px) {
+  /* Slightly smaller fan and books for very narrow screens */
+  .feature-card__fan {
+    min-height: 160px;
+    margin: 0 0 20px;
+  }
+
+  .fan-book {
+    width: 120px;
+    height: 170px;
+  }
+
+  .feature-card.is-coloring .feature-card__fan {
+    height: 180px;
+  }
+  .feature-card.is-coloring .fan-book {
+    width: 140px;
+    height: 140px;
+  }
+
+  /* Reduce horizontal spread so the fan fits better on narrow screens */
+  .fan-book--0 {
+    transform: translate(calc(-50% - 14px), 8px) rotate(-12deg);
+  }
+  .fan-book--1 {
+    transform: translateX(-50%) rotate(0deg);
+  }
+  .fan-book--2 {
+    transform: translate(calc(-50% + 14px), 8px) rotate(12deg);
+  }
+
+  .feature-card:hover .fan-book--0 {
+    transform: translate(calc(-50% - 36px), 8px) rotate(-20deg);
+  }
+  .feature-card:hover .fan-book--1 {
+    transform: translateX(-50%) rotate(0deg) scale(1.04) translateY(-4px);
+  }
+  .feature-card:hover .fan-book--2 {
+    transform: translate(calc(-50% + 36px), 8px) rotate(20deg);
+  }
+}
 </style>

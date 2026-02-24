@@ -18,6 +18,7 @@ interface FormData {
   image: string;
   amazonUrl: string;
   notebookType: string;
+  isVisible: boolean;
 }
 
 const props = defineProps<{
@@ -42,6 +43,7 @@ function blankForm(): FormData {
     image: "",
     amazonUrl: "",
     notebookType: "",
+    isVisible: true,
   };
 }
 
@@ -110,6 +112,7 @@ watch(
       form.image = src.image;
       form.amazonUrl = src.amazonUrl;
       form.notebookType = src.notebookType ?? "";
+      form.isVisible = src.isVisible !== false;
       // Reset upload state
       pendingFile.value = null;
       uploadError.value = "";
@@ -431,6 +434,32 @@ async function handleSubmit() {
               type="text"
               placeholder="e.g. Lined, Grid, Bullet Journal"
             />
+          </div>
+
+          <!-- Visibility -->
+          <div class="form-group">
+            <label class="form-label">Visibility</label>
+            <div class="cat-toggle">
+              <button
+                type="button"
+                class="cat-btn"
+                :class="{ active: form.isVisible }"
+                @click="form.isVisible = true"
+              >
+                👁️ Visible
+              </button>
+              <button
+                type="button"
+                class="cat-btn"
+                :class="{ active: !form.isVisible }"
+                @click="form.isVisible = false"
+              >
+                🙈 Hidden
+              </button>
+            </div>
+            <p class="form-hint">
+              Hidden products won’t appear on the website.
+            </p>
           </div>
 
           <p v-if="error" class="form-error">{{ error }}</p>
@@ -847,6 +876,12 @@ async function handleSubmit() {
   border: 1px solid #ffd0d8;
   border-radius: 8px;
   padding: 8px 12px;
+}
+
+.form-hint {
+  font-size: 0.78rem;
+  color: #b0a0a4;
+  margin-top: 6px;
 }
 
 /* Footer buttons */

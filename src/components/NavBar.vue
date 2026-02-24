@@ -64,6 +64,9 @@ function closeMenu() {
       </button>
     </div>
 
+    <!-- overlay to close mobile menu when clicking outside -->
+    <div v-if="menuOpen" class="navbar__overlay" @click="closeMenu"></div>
+
     <!-- Mobile menu -->
     <Transition name="slide-down">
       <nav v-if="menuOpen" class="navbar__mobile">
@@ -298,6 +301,7 @@ function closeMenu() {
   top: calc(100% + 10px);
   left: 12px;
   right: 12px;
+  z-index: 111;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -311,6 +315,14 @@ function closeMenu() {
     0 8px 32px rgba(242, 151, 160, 0.22),
     0 2px 8px rgba(0, 0, 0, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+/* full-viewport invisible overlay placed under the mobile menu; clicking it closes the menu */
+.navbar__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .navbar__mobile-link {
