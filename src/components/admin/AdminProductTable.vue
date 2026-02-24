@@ -1078,7 +1078,7 @@ const headerColCount = computed(() => {
 
 .scroll-top {
   position: fixed;
-  right: 10px;
+  right: 250px;
   bottom: 6px;
   width: 140px;
   height: 44px;
@@ -1093,7 +1093,7 @@ const headerColCount = computed(() => {
   border: 1px solid #c84a6b;
   box-shadow: 0 12px 30px rgba(200, 74, 107, 0.08);
   cursor: pointer;
-  z-index: 1200;
+  z-index: 200;
   transition:
     box-shadow 0.16s ease,
     opacity 0.12s ease,

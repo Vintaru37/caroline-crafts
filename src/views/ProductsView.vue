@@ -199,7 +199,8 @@ watch(q, (newVal, oldVal) => {
         <p class="page-hero__eyebrow">my products on Amazon</p>
         <h1 class="page-hero__title">Products</h1>
         <p class="page-hero__sub">
-          Handcrafted designs made with care — perfect for you or as a gift.
+          Explore my collection of coloring books and notebooks. <br />
+          Each product is crafted with care and designed to inspire creativity.
         </p>
       </div>
     </section>
