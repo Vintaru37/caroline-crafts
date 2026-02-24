@@ -19,8 +19,8 @@ import amazonImg from "../assets/images/amazon-icon.png";
           Caroline<strong class="footer__logo-accent">Crafts</strong>
         </div>
         <p class="footer__tagline">
-          Handcrafted coloring books and notebooks<br />
-          made with love for every creator ✨
+          Coloring books and notebooks made with love for everyone ✨<br />
+          Grab your markers and let the creativity flow!
         </p>
       </div>
 
