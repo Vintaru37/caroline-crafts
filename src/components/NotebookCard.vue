@@ -20,6 +20,8 @@ const props = defineProps<{
         :src="props.product.image"
         :alt="props.product.title"
         class="product-card__image"
+        loading="lazy"
+        decoding="async"
       />
       <div
         v-if="parseTags(props.product.tag).length"

@@ -69,6 +69,9 @@ const productsRef = ref<HTMLElement | null>(null);
 
 const showScrollTop = ref(false);
 
+const ITEMS_PER_PAGE = 12;
+const currentPage = ref(1);
+
 function onScroll() {
   showScrollTop.value = typeof window !== "undefined" && window.scrollY > 200;
 }
@@ -174,12 +177,45 @@ const filtered = computed(() => {
   return base;
 });
 
-// After a filter change Vue may reposition cards into the viewport without
-// the IntersectionObserver detecting it (it only fires on state *changes*).
-// Unobserving then re-observing forces the IO to report current visibility.
-watch(filtered, () => nextTick(refresh));
-// Re-run products-specific observer when the filtered list changes
-watch(filtered, () => nextTick(setupProductReveals));
+// ── Pagination ───────────────────────────────────────────────────────────
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(filtered.value.length / ITEMS_PER_PAGE)),
+);
+
+const paginated = computed(() => {
+  const start = (currentPage.value - 1) * ITEMS_PER_PAGE;
+  return filtered.value.slice(start, start + ITEMS_PER_PAGE);
+});
+
+// Page numbers shown in the bar – collapses to ellipsis for large sets
+const visiblePages = computed(() => {
+  const total = totalPages.value;
+  const cur = currentPage.value;
+  if (total <= 7)
+    return Array.from({ length: total }, (_, i) => i + 1) as (number | "...")[];
+  const pages: (number | "...")[] = [1];
+  if (cur > 3) pages.push("...");
+  for (let p = Math.max(2, cur - 1); p <= Math.min(total - 1, cur + 1); p++)
+    pages.push(p);
+  if (cur < total - 2) pages.push("...");
+  pages.push(total);
+  return pages;
+});
+
+function goToPage(page: number) {
+  if (page < 1 || page > totalPages.value) return;
+  currentPage.value = page;
+  nextTick(() =>
+    productsRef.value?.scrollIntoView({ behavior: "smooth", block: "start" }),
+  );
+}
+
+// After a filter/search change: reset to page 1 and refresh reveals
+watch(filtered, () => {
+  currentPage.value = 1;
+  nextTick(refresh);
+  nextTick(setupProductReveals);
+});
 
 // When user types in the search box, scroll back to the top of the products
 watch(q, (newVal, oldVal) => {
@@ -216,7 +252,12 @@ watch(q, (newVal, oldVal) => {
 
         <template v-else>
           <div class="products__top reveal">
-            <span class="products__count">{{ filtered.length }} items</span>
+            <span class="products__count">
+              {{ filtered.length }} items
+              <span v-if="totalPages > 1">
+                — Page {{ currentPage }} of {{ totalPages }}</span
+              >
+            </span>
 
             <div class="filters" role="tablist" aria-label="Product filters">
               <button
@@ -332,7 +373,7 @@ watch(q, (newVal, oldVal) => {
           <!-- Product cards -->
           <div class="card-grid">
             <component
-              v-for="(p, i) in filtered"
+              v-for="(p, i) in paginated"
               :is="CardComponentByKind[p.kind]"
               :key="p.id"
               :product="p"
@@ -340,6 +381,62 @@ watch(q, (newVal, oldVal) => {
               :class="`reveal-delay-${(i % 5) + 1}`"
             />
           </div>
+
+          <!-- Pagination -->
+          <nav
+            v-if="totalPages > 1"
+            class="pagination"
+            aria-label="Product pages"
+          >
+            <button
+              class="pagination__btn pagination__arrow"
+              :disabled="currentPage === 1"
+              @click="goToPage(currentPage - 1)"
+              aria-label="Previous page"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M15 18l-6-6 6-6"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  fill="none"
+                />
+              </svg>
+            </button>
+
+            <template v-for="(pg, pgIdx) in visiblePages" :key="pgIdx">
+              <span v-if="pg === '...'" class="pagination__ellipsis">…</span>
+              <button
+                v-else
+                class="pagination__btn pagination__page"
+                :class="{ active: pg === currentPage }"
+                @click="goToPage(pg as number)"
+                :aria-current="pg === currentPage ? 'page' : undefined"
+              >
+                {{ pg }}
+              </button>
+            </template>
+
+            <button
+              class="pagination__btn pagination__arrow"
+              :disabled="currentPage === totalPages"
+              @click="goToPage(currentPage + 1)"
+              aria-label="Next page"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M9 18l6-6-6-6"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  fill="none"
+                />
+              </svg>
+            </button>
+          </nav>
 
           <!-- Scroll to top button -->
           <button
@@ -653,5 +750,71 @@ watch(q, (newVal, oldVal) => {
 .scroll-top:focus-visible {
   outline: 3px solid rgba(200, 74, 107, 0.12);
   outline-offset: 4px;
+}
+
+/* ── Pagination ─────────────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 32px 0 16px;
+  flex-wrap: wrap;
+}
+
+.pagination__btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1.5px solid var(--pinktone);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--mid);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  transition:
+    background var(--transition),
+    color var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.pagination__arrow svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.pagination__btn:hover:not(:disabled) {
+  background: var(--primrose-light);
+  color: var(--primrose-deep);
+  border-color: var(--primrose);
+}
+
+.pagination__btn.active {
+  background: var(--primrose);
+  border-color: var(--primrose);
+  color: var(--white);
+  box-shadow: var(--shadow-soft);
+}
+
+.pagination__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.pagination__ellipsis {
+  color: var(--light-text);
+  font-size: 1.05rem;
+  padding: 0 4px;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  height: 40px;
 }
 </style>
