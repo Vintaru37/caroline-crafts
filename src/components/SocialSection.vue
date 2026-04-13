@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import instagramIcon from "../assets/images/instagram-icon.png";
 import tiktokIcon from "../assets/images/tiktok-icon.png";
+import youtubeIcon from "../assets/images/youtube-icon.svg";
 </script>
 
 <template>
@@ -41,6 +42,22 @@ import tiktokIcon from "../assets/images/tiktok-icon.png";
           </div>
           <div class="social-card__body">
             <strong>TikTok</strong>
+            <span>@itscarolinecrafts</span>
+          </div>
+          <span class="social-card__arrow">→</span>
+        </a>
+
+        <a
+          href="https://youtube.com/@itscarolinecrafts"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="social-card social-card--yt"
+        >
+          <div class="social-card__icon">
+            <img :src="youtubeIcon" alt="YouTube" />
+          </div>
+          <div class="social-card__body">
+            <strong>YouTube</strong>
             <span>@itscarolinecrafts</span>
           </div>
           <span class="social-card__arrow">→</span>
@@ -101,6 +118,9 @@ import tiktokIcon from "../assets/images/tiktok-icon.png";
 .social-card--tt {
   background: var(--lime-light);
 }
+.social-card--yt {
+  background: #fff2f2;
+}
 
 .social-card__icon {
   width: 52px;
@@ -112,6 +132,13 @@ import tiktokIcon from "../assets/images/tiktok-icon.png";
   height: 100%;
   object-fit: contain;
   border-radius: 8px;
+}
+
+.social-card__icon img[alt="YouTube"] {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  transform: scale(1.25);
 }
 
 .social-card__body {

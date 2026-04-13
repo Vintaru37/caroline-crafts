@@ -6,6 +6,7 @@ import { useReveal } from "../composables/useReveal";
 import instagramIcon from "../assets/images/instagram-icon.png";
 import tiktokIcon from "../assets/images/tiktok-icon.png";
 import amazonIcon from "../assets/images/amazon-icon.png";
+import youtubeIcon from "../assets/images/youtube-icon.svg";
 
 useReveal();
 
@@ -27,7 +28,7 @@ const faqs = [
   },
   {
     q: "How can I follow your creative process?",
-    a: "I share timelapse videos, and sneak peeks on Instagram and TikTok. Follow @itscarolinecrafts to stay updated on every new release!",
+    a: "I share timelapse videos, and sneak peeks on Instagram, TikTok and YouTube. Follow @itscarolinecrafts to stay updated on every new release!",
   },
   {
     q: "Can I use your coloring pages for personal use?",
@@ -206,6 +207,19 @@ async function handleSubmit() {
                   <img :src="tiktokIcon" alt="TikTok" />
                 </div>
                 <span class="social-card__name">TikTok</span>
+              </a>
+
+              <!-- YouTube -->
+              <a
+                href="https://youtube.com/@itscarolinecrafts"
+                target="_blank"
+                rel="noopener"
+                class="social-card"
+              >
+                <div class="social-card__icon">
+                  <img :src="youtubeIcon" alt="YouTube" />
+                </div>
+                <span class="social-card__name">YouTube</span>
               </a>
 
               <!-- Amazon -->
@@ -502,6 +516,13 @@ async function handleSubmit() {
   height: 100%;
   object-fit: contain;
   border-radius: 10px;
+}
+
+.social-card__icon img[alt="YouTube"] {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  transform: scale(1.25);
 }
 
 .social-card__name {

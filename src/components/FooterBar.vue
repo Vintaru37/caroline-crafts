@@ -3,6 +3,7 @@ import { RouterLink } from "vue-router";
 import logoImg from "../assets/images/logo.png";
 import instagramImg from "../assets/images/instagram-icon.png";
 import tiktokImg from "../assets/images/tiktok-icon.png";
+import youtubeImg from "../assets/images/youtube-icon.svg";
 import amazonImg from "../assets/images/amazon-icon.png";
 </script>
 
@@ -19,7 +20,7 @@ import amazonImg from "../assets/images/amazon-icon.png";
           Caroline<strong class="footer__logo-accent">Crafts</strong>
         </div>
         <p class="footer__tagline">
-          Coloring books and notebooks made with love for everyone ✨<br />
+          Coloring books and notebooks made with love for everyone.<br />
           Grab your markers and let the creativity flow!
         </p>
       </div>
@@ -54,6 +55,15 @@ import amazonImg from "../assets/images/amazon-icon.png";
         >
           <img :src="tiktokImg" alt="TikTok" class="footer__social-icon" />
           TikTok
+        </a>
+        <a
+          href="https://youtube.com/@itscarolinecrafts"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="footer__social"
+        >
+          <img :src="youtubeImg" alt="YouTube" class="footer__social-icon" />
+          YouTube
         </a>
         <a
           href="https://www.amazon.com/stores/Caroline-Crafts/author/B0FD432Q7J"
@@ -160,6 +170,10 @@ import amazonImg from "../assets/images/amazon-icon.png";
   height: 20px;
   display: inline-block;
   margin-right: 8px;
+}
+
+.footer__social-icon[alt="YouTube"] {
+  transform: scale(1.5);
 }
 
 .footer__bottom {

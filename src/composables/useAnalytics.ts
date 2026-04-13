@@ -100,6 +100,9 @@ export async function trackPageView(page: string) {
   // Never record views while running on localhost / in dev mode
   if (import.meta.env.DEV) return;
 
+  // Don't track admin activity
+  if (page.startsWith("/admin")) return;
+
   const consent = getConsent();
   if (!consent.analytics) return;
 
@@ -113,13 +116,21 @@ export async function trackPageView(page: string) {
     }
   })();
 
-  await supabase.from("page_views").insert({
+  const { error } = await supabase.from("page_views").insert({
     page,
     referrer: referrerHost,
     device_type: getDeviceType(),
     session_id: getOrCreateSessionId(),
     user_agent: navigator.userAgent,
   });
+
+  if (error) {
+    console.warn(
+      "[Analytics] Failed to record page view:",
+      error.message,
+      error.code,
+    );
+  }
 }
 
 // ─── Analytics stats composable (admin only) ─────────────────────────────────
