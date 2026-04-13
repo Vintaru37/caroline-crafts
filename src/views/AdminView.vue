@@ -14,6 +14,7 @@ import AdminProductModal from "../components/admin/AdminProductModal.vue";
 import AdminDeleteModal from "../components/admin/AdminDeleteModal.vue";
 import AdminToast from "../components/admin/AdminToast.vue";
 import AdminTableSettingsModal from "../components/admin/AdminTableSettingsModal.vue";
+import AdminAnalytics from "../components/admin/AdminAnalytics.vue";
 import {
   type TableSettings,
   loadTableSettings,
@@ -225,6 +226,9 @@ let toastTimer: ReturnType<typeof setTimeout> | null = null;
 const showTableSettings = ref(false);
 const tableSettings = ref<TableSettings>(loadTableSettings());
 
+// ── Active tab
+const activeTab = ref<"products" | "analytics">("products");
+
 function handleSettingsUpdate(val: TableSettings) {
   tableSettings.value = val;
   saveTableSettings(val);
@@ -253,33 +257,61 @@ onUnmounted(() => {
   <div v-else class="admin-wrap">
     <AdminHeader :logoImg="logoImg" :stats="stats" @logout="logout" />
 
-    <AdminToolbar
-      :stats="stats"
-      :catFilter="catFilter"
-      :searchQ="searchQ"
-      :filteredCount="filteredProducts.length"
-      :isDraggable="isDraggable"
-      @update:catFilter="catFilter = $event"
-      @update:searchQ="searchQ = $event"
-      @add="openAdd"
-      @export="exportProducts"
-      @importFile="handleImportFile"
-      @openSettings="showTableSettings = true"
-    />
+    <!-- Tab navigation -->
+    <nav class="admin-tabs">
+      <button
+        :class="[
+          'admin-tab',
+          { 'admin-tab--active': activeTab === 'products' },
+        ]"
+        @click="activeTab = 'products'"
+      >
+        📦 Products
+      </button>
+      <button
+        :class="[
+          'admin-tab',
+          { 'admin-tab--active': activeTab === 'analytics' },
+        ]"
+        @click="activeTab = 'analytics'"
+      >
+        📊 Analytics
+      </button>
+    </nav>
 
-    <AdminProductTable
-      :filteredProducts="filteredProducts"
-      :isDraggable="isDraggable"
-      :isLoading="isLoading"
-      :loadError="loadError"
-      :isSavingOrder="isSavingOrder"
-      :tableSettings="tableSettings"
-      @edit="openEdit"
-      @delete="deleteTarget = $event"
-      @reorder="handleReorder"
-      @reload="reload"
-      @toggleVisible="handleToggleVisible"
-    />
+    <!-- Products tab -->
+    <template v-if="activeTab === 'products'">
+      <AdminToolbar
+        :stats="stats"
+        :catFilter="catFilter"
+        :searchQ="searchQ"
+        :filteredCount="filteredProducts.length"
+        :isDraggable="isDraggable"
+        @update:catFilter="catFilter = $event"
+        @update:searchQ="searchQ = $event"
+        @add="openAdd"
+        @export="exportProducts"
+        @importFile="handleImportFile"
+        @openSettings="showTableSettings = true"
+      />
+
+      <AdminProductTable
+        :filteredProducts="filteredProducts"
+        :isDraggable="isDraggable"
+        :isLoading="isLoading"
+        :loadError="loadError"
+        :isSavingOrder="isSavingOrder"
+        :tableSettings="tableSettings"
+        @edit="openEdit"
+        @delete="deleteTarget = $event"
+        @reorder="handleReorder"
+        @reload="reload"
+        @toggleVisible="handleToggleVisible"
+      />
+    </template>
+
+    <!-- Analytics tab -->
+    <AdminAnalytics v-else-if="activeTab === 'analytics'" />
 
     <AdminProductModal
       :show="showModal"
@@ -315,5 +347,40 @@ onUnmounted(() => {
   flex-direction: column;
   background: #faf0f2;
   font-family: var(--font-body);
+}
+
+/* ── Tab bar ────────────────────────────────────────────────────────────────── */
+.admin-tabs {
+  display: flex;
+  gap: 0;
+  background: var(--dark);
+  padding: 0 24px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.06);
+}
+
+.admin-tab {
+  padding: 12px 22px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+  letter-spacing: 0.03em;
+  margin-bottom: -2px;
+}
+
+.admin-tab:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.admin-tab--active {
+  color: var(--primrose, #f297a0);
+  border-bottom-color: var(--primrose, #f297a0);
 }
 </style>

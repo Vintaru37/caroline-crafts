@@ -51,6 +51,16 @@ const router = createRouter({
       },
     },
     {
+      path: "/privacy",
+      name: "privacy",
+      component: () => import("../views/PrivacyView.vue"),
+      meta: {
+        title: "Privacy Policy – CarolineCrafts",
+        description:
+          "Learn how CarolineCrafts collects and uses data, what cookies are used, and your rights under GDPR.",
+      },
+    },
+    {
       path: "/:pathMatch(.*)*",
       name: "not-found",
       component: () => import("../views/NotFoundView.vue"),

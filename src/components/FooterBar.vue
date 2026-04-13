@@ -69,7 +69,10 @@ import amazonImg from "../assets/images/amazon-icon.png";
 
     <div class="footer__bottom">
       <p>
-        © {{ new Date().getFullYear() }} CarolineCrafts. All rights reserved.
+        © {{ new Date().getFullYear() }} CarolineCrafts. All rights reserved. ·
+        <RouterLink to="/privacy" class="footer__privacy-link"
+          >Privacy Policy</RouterLink
+        >
       </p>
     </div>
   </footer>
@@ -165,6 +168,16 @@ import amazonImg from "../assets/images/amazon-icon.png";
   text-align: center;
   font-size: 0.82rem;
   color: var(--mid);
+}
+
+.footer__privacy-link {
+  color: var(--mid);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.footer__privacy-link:hover {
+  color: var(--primrose-deep);
 }
 
 @media (max-width: 768px) {

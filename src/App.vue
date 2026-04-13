@@ -1,12 +1,27 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import NavBar from "./components/NavBar.vue";
 import FooterBar from "./components/FooterBar.vue";
 import CursorSparkles from "./components/CursorSparkles.vue";
+import CookieConsent from "./components/CookieConsent.vue";
+import { trackPageView, getConsent } from "./composables/useAnalytics";
 
 const route = useRoute();
+const router = useRouter();
 const isAdmin = computed(() => route.name === "admin");
+
+// Track page views on each navigation (only fires if analytics consent is given)
+router.afterEach((to) => {
+  trackPageView(to.path);
+});
+
+// When the user updates consent, track the current page right away (if they accepted)
+function onConsentUpdated() {
+  if (getConsent().analytics) {
+    trackPageView(route.path);
+  }
+}
 </script>
 
 <template>
@@ -21,6 +36,9 @@ const isAdmin = computed(() => route.name === "admin");
     </RouterView>
 
     <FooterBar v-if="!isAdmin" />
+
+    <!-- Cookie consent popup – shown to first-time visitors -->
+    <CookieConsent v-if="!isAdmin" @consentUpdated="onConsentUpdated" />
   </div>
 </template>
 
