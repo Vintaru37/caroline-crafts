@@ -222,7 +222,6 @@ const readTime = computed(() => {
         <!-- Footer CTA -->
         <div class="post-footer">
           <div class="post-footer__inner">
-            <span class="post-footer__icon">🎨</span>
             <div>
               <p class="post-footer__title">Love coloring &amp; crafting?</p>
               <p class="post-footer__sub">
@@ -396,7 +395,7 @@ const readTime = computed(() => {
 .post-header__title {
   font-family: var(--font-heading);
   font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-  color: var(--dark);
+  color: var(--primrose-deep);
   line-height: 1.22;
   margin-bottom: 16px;
 }
@@ -534,11 +533,6 @@ const readTime = computed(() => {
   border-radius: var(--radius-md);
   padding: 24px 28px;
   flex-wrap: wrap;
-}
-
-.post-footer__icon {
-  font-size: 2.2rem;
-  flex-shrink: 0;
 }
 
 .post-footer__title {

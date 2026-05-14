@@ -15,7 +15,7 @@ function rand(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }
 
-const THROTTLE_MS = 50; // ~20 sparks/sec max
+const THROTTLE_MS = 70; // ~14 sparks/sec max
 const POOL_SIZE = 36;
 let lastSpawnTime = 0;
 

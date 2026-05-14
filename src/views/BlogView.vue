@@ -23,11 +23,11 @@ useReveal();
     <!-- Hero -->
     <section class="blog-hero reveal">
       <div class="container blog-hero__inner">
-        <span class="eyebrow">From the desk of Caroline</span>
+        <span class="page-hero__eyebrow">from the desk of Caroline</span>
         <h1 class="blog-hero__title">My Blog</h1>
         <p class="blog-hero__sub">
-          Tips, inspiration, and behind-the-scenes looks at the world of
-          coloring books and creative journaling.
+          My blog about coloring books, creative breaks, and finding beauty in
+          simple things.
         </p>
       </div>
       <div class="blog-hero__deco" aria-hidden="true">
@@ -89,6 +89,14 @@ useReveal();
 .blog-hero__inner {
   position: relative;
   z-index: 2;
+}
+
+.page-hero__eyebrow {
+  font-family: var(--font-accent);
+  font-size: 2rem;
+  color: var(--primrose-deep);
+  display: block;
+  margin-bottom: 10px;
 }
 
 .blog-hero__title {
