@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
-import logoImg from "../assets/images/logo.png";
+import logoImg from "../assets/images/logo.webp";
 import instagramImg from "../assets/images/instagram-icon.png";
 import tiktokImg from "../assets/images/tiktok-icon.png";
 import youtubeImg from "../assets/images/youtube-icon.svg";
@@ -29,6 +29,7 @@ import amazonImg from "../assets/images/amazon-icon.png";
         <h4 class="footer__heading">Navigation</h4>
         <RouterLink to="/" class="footer__link">Home</RouterLink>
         <RouterLink to="/products" class="footer__link">Products</RouterLink>
+        <RouterLink to="/blog" class="footer__link">Blog</RouterLink>
         <RouterLink to="/contact" class="footer__link">Contact</RouterLink>
       </div>
 
@@ -123,7 +124,7 @@ import amazonImg from "../assets/images/amazon-icon.png";
 }
 
 .footer__logo-img {
-  width: 50px;
+  width: 60px;
   margin-right: 12px;
 }
 

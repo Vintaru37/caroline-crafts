@@ -72,7 +72,7 @@ export async function uploadProductImage(
  * Errors are logged but not re-thrown — the product update already succeeded.
  */
 export async function deleteProductImage(url: string): Promise<void> {
-  const path = storagePathFromUrl(url);
+  const path = storagePathFromUrl(url, "product-images");
   if (!path) return;
   const { error } = await supabase.storage
     .from("product-images")
@@ -85,9 +85,64 @@ export async function deleteProductImage(url: string): Promise<void> {
   }
 }
 
-/** Extract the object path inside the bucket from a Supabase public URL. */
-function storagePathFromUrl(url: string): string | null {
-  const marker = "/product-images/";
+// ── Blog image upload ─────────────────────────────────────────────────────────
+
+/** Max dimensions for blog cover images (wide landscape). */
+const BLOG_MAX_DIMS = { w: 1200, h: 675 };
+
+/**
+ * Resize `file` to fit within 1200×675, convert to WebP, and upload to the
+ * "blog-images" Supabase Storage bucket.
+ *
+ * @returns The public URL of the uploaded image.
+ */
+export async function uploadBlogImage(
+  file: File,
+  onPhase?: (phase: UploadPhase) => void,
+): Promise<string> {
+  onPhase?.("processing");
+  const webpBlob = await resizeAndConvertToWebP(file, BLOG_MAX_DIMS);
+
+  onPhase?.("uploading");
+  const slug = file.name
+    .replace(/\.[^.]+$/, "")
+    .replace(/[^a-z0-9]+/gi, "-")
+    .toLowerCase()
+    .slice(0, 60);
+  const path = `covers/${Date.now()}-${slug}.webp`;
+
+  const { data, error } = await supabase.storage
+    .from("blog-images")
+    .upload(path, webpBlob, { contentType: "image/webp", upsert: false });
+
+  if (error) throw new Error(`Upload failed: ${error.message}`);
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from("blog-images").getPublicUrl(data.path);
+
+  return publicUrl;
+}
+
+/**
+ * Delete a previously uploaded blog cover image from Supabase Storage.
+ * Safe to call with any URL — silently no-ops if it's not a blog-images URL.
+ */
+export async function deleteBlogImage(url: string): Promise<void> {
+  const path = storagePathFromUrl(url, "blog-images");
+  if (!path) return;
+  const { error } = await supabase.storage.from("blog-images").remove([path]);
+  if (error) {
+    console.warn(
+      "[deleteBlogImage] Could not delete old image:",
+      error.message,
+    );
+  }
+}
+
+/** Extract the object path inside a named bucket from a Supabase public URL. */
+function storagePathFromUrl(url: string, bucket: string): string | null {
+  const marker = `/${bucket}/`;
   const idx = url.indexOf(marker);
   if (idx === -1) return null;
   return decodeURIComponent(url.slice(idx + marker.length).split("?")[0] ?? "");

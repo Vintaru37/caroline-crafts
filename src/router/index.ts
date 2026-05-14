@@ -51,6 +51,24 @@ const router = createRouter({
       },
     },
     {
+      path: "/blog",
+      name: "blog",
+      component: () => import("../views/BlogView.vue"),
+      meta: {
+        title: "Blog – CarolineCrafts",
+        description:
+          "Tips, creative inspiration, and behind-the-scenes articles from Caroline about coloring books, journaling, and crafting.",
+      },
+    },
+    {
+      path: "/blog/:slug",
+      name: "blog-post",
+      component: () => import("../views/BlogPostView.vue"),
+      meta: {
+        title: "Blog – CarolineCrafts",
+      },
+    },
+    {
       path: "/privacy",
       name: "privacy",
       component: () => import("../views/PrivacyView.vue"),

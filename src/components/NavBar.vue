@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
-import logoImg from "../assets/images/logo.png";
+import logoImg from "../assets/images/logo.webp";
 
 const route = useRoute();
 const menuOpen = ref(false);
@@ -9,6 +9,7 @@ const menuOpen = ref(false);
 const navLinks = [
   { to: "/", label: "Home" },
   { to: "/products", label: "Products" },
+  { to: "/blog", label: "Blog" },
   { to: "/contact", label: "Contact" },
 ];
 
@@ -140,7 +141,7 @@ function closeMenu() {
 }
 
 .navbar__logo-img {
-  height: 50px;
+  height: 60px;
   display: block;
   object-fit: contain;
   filter: drop-shadow(0 2px 8px rgba(242, 151, 160, 0.45));

@@ -3,8 +3,11 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useProducts } from "../composables/useProducts";
 import type { AdminProduct, ProductCategory } from "../composables/useProducts";
 import { supabase } from "../lib/supabase";
-import { deleteProductImage } from "../composables/useImageUpload";
-import logoImg from "../assets/images/logo.png";
+import {
+  deleteProductImage,
+  deleteBlogImage,
+} from "../composables/useImageUpload";
+import logoImg from "../assets/images/logo.webp";
 
 import AdminLoginScreen from "../components/admin/AdminLoginScreen.vue";
 import AdminHeader from "../components/admin/AdminHeader.vue";
@@ -15,11 +18,16 @@ import AdminDeleteModal from "../components/admin/AdminDeleteModal.vue";
 import AdminToast from "../components/admin/AdminToast.vue";
 import AdminTableSettingsModal from "../components/admin/AdminTableSettingsModal.vue";
 import AdminAnalytics from "../components/admin/AdminAnalytics.vue";
+import AdminBlogTable from "../components/admin/AdminBlogTable.vue";
+import AdminBlogModal from "../components/admin/AdminBlogModal.vue";
+import AdminBlogDeleteModal from "../components/admin/AdminBlogDeleteModal.vue";
 import {
   type TableSettings,
   loadTableSettings,
   saveTableSettings,
 } from "../components/admin/tableSettings";
+import { useBlog } from "../composables/useBlog";
+import type { BlogArticle, BlogArticleInput } from "../composables/useBlog";
 
 // Auth
 const authenticated = ref(false);
@@ -227,7 +235,7 @@ const showTableSettings = ref(false);
 const tableSettings = ref<TableSettings>(loadTableSettings());
 
 // ── Active tab
-const activeTab = ref<"products" | "analytics">("products");
+const activeTab = ref<"products" | "blog" | "analytics">("products");
 
 function handleSettingsUpdate(val: TableSettings) {
   tableSettings.value = val;
@@ -247,6 +255,116 @@ function showToast(msg: string, type: "success" | "error" = "success") {
 onUnmounted(() => {
   if (toastTimer) clearTimeout(toastTimer);
 });
+
+// ── Blog tab ─────────────────────────────────────────────────────────────────
+const {
+  isLoading: blogLoading,
+  loadError: blogError,
+  allArticles,
+  reload: reloadBlog,
+  addArticle,
+  updateArticle,
+  deleteArticle,
+  togglePublished,
+} = useBlog();
+
+const showBlogModal = ref(false);
+const blogModalMode = ref<"add" | "edit">("add");
+const blogEditingId = ref<string | null>(null);
+const blogModalInitialData = ref<Omit<
+  BlogArticle,
+  "id" | "created_at" | "updated_at"
+> | null>(null);
+const blogFormError = ref("");
+const blogSaving = ref(false);
+const blogDeleteTarget = ref<BlogArticle | null>(null);
+
+function openBlogAdd() {
+  blogModalInitialData.value = null;
+  blogEditingId.value = null;
+  blogModalMode.value = "add";
+  blogFormError.value = "";
+  showBlogModal.value = true;
+}
+
+function openBlogEdit(a: BlogArticle) {
+  const { id, created_at, updated_at, ...rest } = a;
+  blogModalInitialData.value = rest;
+  blogEditingId.value = id;
+  blogModalMode.value = "edit";
+  blogFormError.value = "";
+  showBlogModal.value = true;
+}
+
+async function handleBlogSave(formData: BlogArticleInput) {
+  if (!formData.title.trim()) {
+    blogFormError.value = "Title is required.";
+    return;
+  }
+  if (!formData.slug.trim()) {
+    blogFormError.value = "Slug is required.";
+    return;
+  }
+  blogSaving.value = true;
+  blogFormError.value = "";
+  try {
+    if (blogModalMode.value === "add") {
+      await addArticle(formData);
+      showToast("Article created!");
+    } else if (blogEditingId.value) {
+      const oldImage = blogModalInitialData.value?.cover_image ?? "";
+      await updateArticle(blogEditingId.value, formData);
+      // Remove the old cover from the bucket if it was replaced (non-fatal)
+      if (oldImage && oldImage !== formData.cover_image) {
+        await deleteBlogImage(oldImage);
+      }
+      showToast("Article updated!");
+    }
+    showBlogModal.value = false;
+  } catch (err: unknown) {
+    blogFormError.value =
+      "Save failed: " + (err instanceof Error ? err.message : "Unknown error");
+  } finally {
+    blogSaving.value = false;
+  }
+}
+
+async function confirmBlogDelete() {
+  if (!blogDeleteTarget.value) return;
+  try {
+    const oldImage = blogDeleteTarget.value.cover_image ?? "";
+    await deleteArticle(blogDeleteTarget.value.id);
+    // Remove cover from bucket (non-fatal)
+    if (oldImage) {
+      await deleteBlogImage(oldImage);
+    }
+    blogDeleteTarget.value = null;
+    showToast("Article deleted.");
+  } catch (err: unknown) {
+    showToast(
+      "Delete failed: " +
+        (err instanceof Error ? err.message : "Unknown error"),
+      "error",
+    );
+  }
+}
+
+async function handleTogglePublish(article: BlogArticle) {
+  try {
+    await togglePublished(article);
+    showToast(
+      article.is_published
+        ? `"${article.title}" unpublished.`
+        : `"${article.title}" is now live!`,
+    );
+  } catch (err: unknown) {
+    showToast(
+      "Failed to update status: " +
+        (err instanceof Error ? err.message : "Unknown error"),
+      "error",
+    );
+  }
+}
 </script>
 
 <template>
@@ -267,6 +385,12 @@ onUnmounted(() => {
         @click="activeTab = 'products'"
       >
         📦 Products
+      </button>
+      <button
+        :class="['admin-tab', { 'admin-tab--active': activeTab === 'blog' }]"
+        @click="activeTab = 'blog'"
+      >
+        ✍️ Blog
       </button>
       <button
         :class="[
@@ -313,6 +437,25 @@ onUnmounted(() => {
     <!-- Analytics tab -->
     <AdminAnalytics v-else-if="activeTab === 'analytics'" />
 
+    <!-- Blog tab -->
+    <template v-else-if="activeTab === 'blog'">
+      <div class="blog-tab-header">
+        <h2 class="blog-tab-title">✍️ Blog Articles</h2>
+        <button class="btn-new-article" @click="openBlogAdd">
+          + New Article
+        </button>
+      </div>
+      <AdminBlogTable
+        :articles="allArticles"
+        :isLoading="blogLoading"
+        :loadError="blogError"
+        @edit="openBlogEdit"
+        @delete="blogDeleteTarget = $event"
+        @togglePublish="handleTogglePublish"
+        @reload="reloadBlog"
+      />
+    </template>
+
     <AdminProductModal
       :show="showModal"
       :mode="modalMode"
@@ -327,6 +470,22 @@ onUnmounted(() => {
       :target="deleteTarget"
       @cancel="deleteTarget = null"
       @confirm="confirmDelete"
+    />
+
+    <AdminBlogModal
+      :show="showBlogModal"
+      :mode="blogModalMode"
+      :initialData="blogModalInitialData"
+      :saving="blogSaving"
+      :error="blogFormError"
+      @close="showBlogModal = false"
+      @save="handleBlogSave"
+    />
+
+    <AdminBlogDeleteModal
+      :target="blogDeleteTarget"
+      @cancel="blogDeleteTarget = null"
+      @confirm="confirmBlogDelete"
     />
 
     <AdminToast :visible="toastVisible" :msg="toastMsg" :type="toastType" />
@@ -382,5 +541,38 @@ onUnmounted(() => {
 .admin-tab--active {
   color: var(--primrose, #f297a0);
   border-bottom-color: var(--primrose, #f297a0);
+}
+
+/* ── Blog tab header ── */
+.blog-tab-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 12px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.blog-tab-title {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  color: var(--dark);
+}
+
+.btn-new-article {
+  padding: 10px 22px;
+  background: linear-gradient(135deg, var(--primrose, #f297a0), #e57f8a);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md, 18px);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-new-article:hover {
+  opacity: 0.88;
 }
 </style>

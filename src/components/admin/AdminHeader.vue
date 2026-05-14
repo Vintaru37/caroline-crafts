@@ -55,8 +55,7 @@ defineEmits<{ logout: [] }>();
 }
 
 .admin-header__logo-img {
-  height: 36px;
-  width: auto;
+  height: 52px;
   object-fit: contain;
 }
 

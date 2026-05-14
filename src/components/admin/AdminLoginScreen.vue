@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { supabase } from "../../lib/supabase";
-import logoImg from "../../assets/images/logo.png";
+import logoImg from "../../assets/images/logo.webp";
 
 const emailInput = ref("");
 const pwInput = ref("");
@@ -126,7 +126,7 @@ async function login() {
 }
 
 .login-brand__img {
-  height: 56px;
+  height: 60px;
   width: auto;
   object-fit: contain;
 }
